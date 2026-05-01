@@ -1,9 +1,0 @@
-Metadata-Version: 2.4
-Name: kolmo-stats
-Version: 0.1.0
-Summary: Statistical tools for Kolmo
-Requires-Python: >=3.10
-Description-Content-Type: text/markdown
-
-# kolmo_stats
-# A stats library that will grow overtime
