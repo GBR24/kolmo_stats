@@ -4,11 +4,34 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "kolmo-stats"
-version = "0.1.0"
-description = "Statistical tools for Kolmo"
+version = "0.2.0"
+description = "Energy market analytics — statistics, curves, spreads, risk, and project economics"
 readme = "README.md"
 requires-python = ">=3.10"
-dependencies = []
+license = {text = "MIT"}
+keywords = ["energy", "oil", "gas", "LNG", "power", "trading", "risk", "analytics"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Financial and Insurance Industry",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Mathematics",
+    "Topic :: Office/Business :: Financial",
+]
+dependencies = [
+    "numpy>=1.24",
+    "pandas>=2.0",
+    "scipy>=1.10",
+    "networkx>=3.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=7.0", "pytest-cov"]
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
