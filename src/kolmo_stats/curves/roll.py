@@ -14,8 +14,8 @@ def roll_yield(
     explain: bool = False,
 ) -> float | dict:
     """
-    Estimate the roll yield from moving a long position from a far contract
-    to a near contract as expiry approaches.
+    Estimate the roll yield from rolling long futures exposure from an
+    expiring near contract into a deferred far contract.
 
     In backwardation the roll yield is positive — you sell near at a premium
     and buy far cheaper. In contango it is negative.

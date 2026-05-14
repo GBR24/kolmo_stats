@@ -15,11 +15,12 @@ def historical_var(
     explain: bool = False,
 ) -> float | dict:
     """
-    Historical Value at Risk (VaR) — the loss not exceeded at a given
-    confidence level based on actual historical returns.
+    Historical Value at Risk (VaR) — the historical loss quantile at a
+    given confidence level.
 
-    VaR at 95% confidence means: in 95% of days, the loss was less than
-    this number.
+    VaR at 95% confidence means losses were worse than this threshold in
+    the worst 5% of historical observations. It is a quantile, not a
+    maximum possible loss.
 
     Parameters
     ----------
@@ -31,7 +32,7 @@ def historical_var(
 
     Returns
     -------
-    float (positive loss amount), or dict if explain=True
+    float (loss amount in the same units as returns), or dict if explain=True
 
     Examples
     --------
@@ -48,6 +49,7 @@ def historical_var(
         raise ValueError(f"confidence must be between 0 and 1; got {confidence}")
 
     percentile = (1 - confidence) * 100
+    tail_probability = 1 - confidence
     var = float(-np.percentile(arr, percentile))
 
     if explain:
@@ -55,12 +57,14 @@ def historical_var(
             result=var,
             explanation=(
                 f"Historical VaR at {confidence:.0%} confidence: "
-                f"the loss exceeded only {100 - percentile:.0f}% of the time."
+                f"losses were worse than this threshold in roughly "
+                f"{tail_probability:.0%} of historical observations."
             ),
             formula=f"VaR = -percentile(returns, {percentile:.1f})",
             inputs={
                 "n_observations": len(arr),
                 "confidence": confidence,
+                "tail_probability": tail_probability,
                 "percentile": percentile,
                 "mean_return": float(np.mean(arr)),
             },
@@ -74,8 +78,8 @@ def expected_shortfall(
     explain: bool = False,
 ) -> float | dict:
     """
-    Expected Shortfall (ES), also called CVaR — the average loss in the
-    tail beyond VaR.
+    Expected Shortfall (ES), also called CVaR — the average historical
+    loss inside the tail beyond VaR.
 
     ES is a more conservative and coherent risk measure than VaR because
     it accounts for the severity of extreme losses, not just their frequency.
@@ -90,7 +94,7 @@ def expected_shortfall(
 
     Returns
     -------
-    float (positive loss amount), or dict if explain=True
+    float (loss amount in the same units as returns), or dict if explain=True
     """
     arr = coerce_array(returns)
     arr = arr[~np.isnan(arr)]
@@ -108,9 +112,9 @@ def expected_shortfall(
             result=es,
             explanation=(
                 f"Expected Shortfall (CVaR) at {confidence:.0%}: "
-                "average loss in the worst tail beyond VaR."
+                "average historical loss in the tail beyond VaR."
             ),
-            formula="ES = mean(losses where loss > VaR)",
+            formula="ES = -mean(returns where returns <= -VaR)",
             inputs={
                 "confidence": confidence,
                 "var": var_threshold,

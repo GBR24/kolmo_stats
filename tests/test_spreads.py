@@ -1,7 +1,18 @@
 import numpy as np
 import pandas as pd
 import pytest
-from kolmo_stats import crack_spread, spark_spread, lng_arbitrage
+from kolmo_stats import (
+    crack_spread,
+    spark_spread,
+    lng_arbitrage,
+    brent_wti_spread,
+    quality_spread,
+    location_spread,
+    ttf_jkm_spread,
+    henry_hub_ttf_arb,
+    lng_netback,
+    shipping_adjusted_spread,
+)
 
 
 # ── crack_spread ──────────────────────────────────────────────────────────────
@@ -10,6 +21,10 @@ def test_crack_321_scalar():
     # (2*100 + 95 - 3*80) / 3 = (200+95-240)/3 = 55/3 ≈ 18.33
     result = crack_spread(80, 100, 95, ratio="3-2-1")
     assert result == pytest.approx((2 * 100 + 95 - 3 * 80) / 3)
+
+def test_crack_532_scalar():
+    result = crack_spread(80, 100, 95, ratio="5-3-2")
+    assert result == pytest.approx((3 * 100 + 2 * 95 - 5 * 80) / 5)
 
 def test_crack_211_scalar():
     result = crack_spread(80, 100, 95, ratio="2-1-1")
@@ -36,6 +51,13 @@ def test_crack_array_input():
 def test_crack_series_input():
     crude = pd.Series([80.0, 82.0])
     gas = pd.Series([100.0, 103.0])
+    dist = pd.Series([95.0, 98.0])
+    result = crack_spread(crude, gas, dist, ratio="3-2-1")
+    assert isinstance(result, pd.Series)
+
+def test_crack_distillate_series_sets_series_output():
+    crude = 80.0
+    gas = 100.0
     dist = pd.Series([95.0, 98.0])
     result = crack_spread(crude, gas, dist, ratio="3-2-1")
     assert isinstance(result, pd.Series)
@@ -86,3 +108,39 @@ def test_lng_arb_zero_costs():
 def test_lng_arb_explain():
     r = lng_arbitrage(12, 3, 2, regas_cost=0.3, liquefaction_cost=2.5, boil_off_cost=0.2, explain=True)
     assert r["inputs"]["total_cost"] == pytest.approx(5.0)
+
+
+# ── oil basis spreads ─────────────────────────────────────────────────────────
+
+def test_brent_wti_spread():
+    assert brent_wti_spread(84, 80) == pytest.approx(4.0)
+
+def test_quality_spread_series():
+    light = pd.Series([85.0, 86.0])
+    heavy = pd.Series([78.0, 79.5])
+    result = quality_spread(light, heavy)
+    assert isinstance(result, pd.Series)
+    assert result.iloc[0] == pytest.approx(7.0)
+
+def test_location_spread_explain():
+    r = location_spread(82, 79, explain=True)
+    assert r["result"] == pytest.approx(3.0)
+    assert "formula" in r
+
+
+# ── gas / LNG spreads ─────────────────────────────────────────────────────────
+
+def test_ttf_jkm_spread():
+    assert ttf_jkm_spread(ttf_price=10, jkm_price=14) == pytest.approx(4.0)
+
+def test_lng_netback():
+    result = lng_netback(14, freight_cost=2, regas_cost=0.3, liquefaction_cost=2.5, boil_off_cost=0.2)
+    assert result == pytest.approx(9.0)
+
+def test_shipping_adjusted_spread():
+    result = shipping_adjusted_spread(14, 3.5, freight_cost=2, regas_cost=0.3, liquefaction_cost=2.5, boil_off_cost=0.2)
+    assert result == pytest.approx(5.5)
+
+def test_henry_hub_ttf_arb():
+    result = henry_hub_ttf_arb(3.5, 10.5, freight_cost=2, regas_cost=0.3, liquefaction_cost=2.5, boil_off_cost=0.2)
+    assert result == pytest.approx(2.0)

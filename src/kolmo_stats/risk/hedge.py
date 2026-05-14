@@ -68,11 +68,13 @@ def hedge_ratio(
     ratio = cov / var_h
 
     if explain:
+        hedge_action = "sell" if ratio >= 0 else "buy"
         return make_explain(
             result=float(ratio),
             explanation=(
                 f"Minimum variance hedge ratio: {ratio:.4f}. "
-                "For every unit of asset exposure, sell this many units of the hedge."
+                f"For every unit of long asset exposure, {hedge_action} "
+                f"{abs(ratio):.4f} units of the hedge."
             ),
             formula="h* = cov(asset, hedge) / var(hedge)",
             inputs={

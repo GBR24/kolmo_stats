@@ -1,7 +1,18 @@
 import numpy as np
 import pandas as pd
 import pytest
-from kolmo_stats import historical_var, expected_shortfall, scenario_pnl, hedge_ratio
+from kolmo_stats import (
+    historical_var,
+    expected_shortfall,
+    scenario_pnl,
+    hedge_ratio,
+    rolling_var,
+    rolling_expected_shortfall,
+    stress_matrix,
+    cholesky_decompose,
+    correlated_normals,
+    correlated_price_shocks,
+)
 
 
 # ── historical_var ────────────────────────────────────────────────────────────
@@ -42,6 +53,8 @@ def test_var_explain():
     returns = np.random.randn(200)
     r = historical_var(returns, explain=True)
     assert "confidence" in r["inputs"]
+    assert r["inputs"]["tail_probability"] == pytest.approx(0.05)
+    assert "5%" in r["explanation"]
 
 
 # ── expected_shortfall ────────────────────────────────────────────────────────
@@ -62,6 +75,25 @@ def test_es_explain():
     returns = np.random.randn(200)
     r = expected_shortfall(returns, explain=True)
     assert "var" in r["inputs"]
+
+
+# ── rolling risk ──────────────────────────────────────────────────────────────
+
+def test_rolling_var_returns_series():
+    returns = pd.Series(np.random.randn(100))
+    result = rolling_var(returns, window=20)
+    assert isinstance(result, pd.Series)
+    assert result.iloc[:19].isna().all()
+
+def test_rolling_expected_shortfall_returns_series():
+    returns = pd.Series(np.random.randn(100))
+    result = rolling_expected_shortfall(returns, window=20)
+    assert isinstance(result, pd.Series)
+    assert result.iloc[:19].isna().all()
+
+def test_rolling_var_invalid_confidence():
+    with pytest.raises(ValueError):
+        rolling_var([1, 2, 3], confidence=1.2)
 
 
 # ── scenario_pnl ──────────────────────────────────────────────────────────────
@@ -91,6 +123,20 @@ def test_scenario_pnl_explain():
     r = scenario_pnl({"Brent": 1000}, {"Brent": 5}, explain=True)
     assert "total_pnl" in r["inputs"]
 
+def test_stress_matrix_basic():
+    positions = {"Brent": 1000, "WTI": -500}
+    scenarios = {
+        "bull": {"Brent": 5, "WTI": 4},
+        "bear": {"Brent": -6, "WTI": -5},
+    }
+    df = stress_matrix(positions, scenarios)
+    assert df.loc["bull", "total_pnl"] == pytest.approx(3000.0)
+    assert df.loc["bear", "total_pnl"] == pytest.approx(-3500.0)
+
+def test_stress_matrix_empty_scenarios():
+    with pytest.raises(ValueError):
+        stress_matrix({"Brent": 1000}, {})
+
 
 # ── hedge_ratio ───────────────────────────────────────────────────────────────
 
@@ -114,3 +160,35 @@ def test_hedge_ratio_explain():
     hedge = asset * 0.9 + np.random.randn(100) * 0.1
     r = hedge_ratio(asset, hedge, explain=True)
     assert "covariance" in r["inputs"]
+
+
+# ── Cholesky correlated shocks ────────────────────────────────────────────────
+
+def test_cholesky_decompose_reconstructs_matrix():
+    corr = np.array([[1.0, 0.6], [0.6, 1.0]])
+    l = cholesky_decompose(corr)
+    assert l @ l.T == pytest.approx(corr)
+
+def test_cholesky_rejects_non_symmetric_matrix():
+    with pytest.raises(ValueError, match="symmetric"):
+        cholesky_decompose([[1.0, 0.5], [0.1, 1.0]])
+
+def test_correlated_normals_rejects_bad_correlation_diagonal():
+    with pytest.raises(ValueError, match="diagonal"):
+        correlated_normals([[2.0, 0.1], [0.1, 1.0]], n_sims=10)
+
+def test_correlated_normals_named_dataframe():
+    corr = np.array([[1.0, 0.5], [0.5, 1.0]])
+    df = correlated_normals(corr, n_sims=100, seed=1, names=["Brent", "WTI"])
+    assert isinstance(df, pd.DataFrame)
+    assert list(df.columns) == ["Brent", "WTI"]
+    assert df.shape == (100, 2)
+
+def test_correlated_price_shocks_shape():
+    corr = np.eye(3)
+    shocks = correlated_price_shocks([2.0, 1.5, 0.8], corr, n_sims=50, seed=1)
+    assert shocks.shape == (50, 3)
+
+def test_correlated_price_shocks_names_length():
+    with pytest.raises(ValueError, match="names"):
+        correlated_price_shocks([2.0, 1.5], np.eye(2), n_sims=10, names=["Brent"])

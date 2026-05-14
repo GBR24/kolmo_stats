@@ -4,6 +4,27 @@ All notable changes to `kolmo-stats` are documented here.
 
 ---
 
+## [Unreleased]
+
+### Added
+
+- Repo structure: moved compiled-backend planning from `cpp/` to `native/`,
+  moved the market graph from `Graph Intelligence/` to `knowledge_graph/`,
+  and added `docs/` for user/contributor guidance.
+- Oil/gas quick wins: Brent-WTI, quality, location, JKM-TTF, Henry Hub-TTF,
+  LNG netback, and shipping-adjusted spread helpers.
+- Curve helpers: prompt spread, M1-M3, M1-M12, time-spread series, and
+  annualized carry.
+- Risk helpers: rolling VaR, rolling Expected Shortfall, multi-scenario stress
+  matrix, Cholesky decomposition, correlated normals, and correlated price
+  shocks.
+- Observable Markov-chain helpers for market regime transitions, simulation,
+  and horizon probabilities.
+- Product unit helpers for $/gal vs $/bbl and product tons vs barrels.
+- 5-3-2 crack spread support.
+
+---
+
 ## [0.2.0] — 2026-05-07
 
 ### Added
@@ -26,13 +47,13 @@ All notable changes to `kolmo-stats` are documented here.
 
 **`explain=True` on every function** — pass `explain=True` to get a dict with `result`, `explanation`, `formula`, and `inputs`.
 
-**Graph Intelligence** (`Graph Intelligence/market_graph.py`) — community-editable energy market knowledge graph with 53 nodes and 86 directed edges across crude, products, gas, macro, and geopolitical clusters. Includes a contribution guide.
+**Knowledge graph** (`knowledge_graph/market_graph.py`) — community-editable energy market knowledge graph with 53 nodes and 86 directed edges across crude, products, gas, macro, and geopolitical clusters. Includes a contribution guide.
 
 **7 runnable examples** in `examples/` covering all function groups.
 
 **107 tests** across `tests/test_stats.py`, `test_curves.py`, `test_spreads.py`, `test_risk.py`, `test_economics.py`.
 
-**C++ architecture blueprint** in `cpp/README.md` and `cpp/DESIGN.md`.
+**Native backend architecture blueprint** in `native/README.md` and `native/DESIGN.md`.
 
 **`CONTRIBUTING.md`** — four-level guide for contributing market knowledge, formulas, models, or engine primitives.
 

@@ -42,6 +42,11 @@ def rolling_correlation(
     >>> gasoil = brent * 0.95 + np.random.randn(200)
     >>> rolling_correlation(brent, gasoil, window=30)
     """
+    if window <= 0:
+        raise ValueError("window must be positive")
+    if min_periods is not None and min_periods <= 0:
+        raise ValueError("min_periods must be positive")
+
     if not isinstance(x, pd.Series):
         x = pd.Series(x, dtype=float)
     if not isinstance(y, pd.Series):
@@ -104,12 +109,19 @@ def lead_lag_correlation(
     >>> result.attrs["best_lag"]
     5
     """
+    if method != "pearson":
+        raise ValueError("method must be 'pearson'")
+    if max_lag < 0:
+        raise ValueError("max_lag must be non-negative")
+
     if not isinstance(x, pd.Series):
         x = pd.Series(x, dtype=float)
     if not isinstance(y, pd.Series):
         y = pd.Series(y, dtype=float)
 
     validate_same_length(x, y, ("x", "y"))
+    if max_lag >= len(x):
+        raise ValueError("max_lag must be smaller than the series length")
 
     lags = list(range(-max_lag, max_lag + 1))
     corrs: list[float] = []

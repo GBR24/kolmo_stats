@@ -42,6 +42,9 @@ def curve_slope(
     >>> curve_slope([80, 82, 85, 87])
     2.333...
     """
+    if method != "linear":
+        raise ValueError("method must be 'linear'")
+
     if isinstance(curve, dict):
         prices = np.array(list(curve.values()), dtype=float)
     elif isinstance(curve, pd.Series):

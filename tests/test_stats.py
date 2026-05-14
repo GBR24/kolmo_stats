@@ -4,6 +4,7 @@ import pytest
 from kolmo_stats import (
     mean, weighted_mean, rolling_zscore,
     seasonal_zscore, rolling_correlation, lead_lag_correlation,
+    transition_matrix, simulate_markov_chain, regime_probabilities,
 )
 
 
@@ -64,6 +65,10 @@ def test_weighted_mean_nan_ignored():
     result = weighted_mean([80, float("nan"), 85], [1, 1, 1])
     assert result == pytest.approx(82.5)
 
+def test_weighted_mean_nan_raises_when_not_ignored():
+    with pytest.raises(ValueError, match="NaN"):
+        weighted_mean([80, float("nan"), 85], [1, 1, 1], ignore_nan=False)
+
 def test_weighted_mean_explain():
     r = weighted_mean([80, 85], [0.7, 0.3], explain=True)
     assert r["result"] == pytest.approx(81.5)
@@ -88,6 +93,10 @@ def test_rolling_zscore_explain():
     r = rolling_zscore(s, window=10, explain=True)
     assert isinstance(r, dict)
     assert "result" in r
+
+def test_rolling_zscore_invalid_window():
+    with pytest.raises(ValueError):
+        rolling_zscore([1, 2, 3], window=0)
 
 
 # ── seasonal_zscore ───────────────────────────────────────────────────────────
@@ -139,6 +148,10 @@ def test_rolling_correlation_length_mismatch():
     with pytest.raises(ValueError):
         rolling_correlation(pd.Series([1, 2]), pd.Series([1, 2, 3]))
 
+def test_rolling_correlation_invalid_window():
+    with pytest.raises(ValueError):
+        rolling_correlation([1, 2, 3], [1, 2, 3], window=0)
+
 def test_rolling_correlation_explain():
     x = pd.Series(range(30), dtype=float)
     r = rolling_correlation(x, x, window=10, explain=True)
@@ -168,7 +181,53 @@ def test_lead_lag_correlation_attrs():
     assert "best_lag" in df.attrs
     assert "best_correlation" in df.attrs
 
+def test_lead_lag_correlation_invalid_method():
+    with pytest.raises(ValueError):
+        lead_lag_correlation([1, 2, 3], [1, 2, 3], method="spearman")
+
+def test_lead_lag_correlation_lag_too_large():
+    with pytest.raises(ValueError):
+        lead_lag_correlation([1, 2, 3], [1, 2, 3], max_lag=3)
+
 def test_lead_lag_correlation_explain():
     x = pd.Series(range(50), dtype=float)
     r = lead_lag_correlation(x, x, max_lag=5, explain=True)
     assert isinstance(r, dict)
+
+
+# ── Markov regimes ────────────────────────────────────────────────────────────
+
+def test_transition_matrix_basic():
+    states = ["backwardation", "backwardation", "contango", "backwardation"]
+    matrix = transition_matrix(states)
+    assert isinstance(matrix, pd.DataFrame)
+    assert matrix.loc["backwardation", "backwardation"] == pytest.approx(0.5)
+    assert matrix.loc["backwardation", "contango"] == pytest.approx(0.5)
+
+def test_transition_matrix_state_order_missing_raises():
+    with pytest.raises(ValueError):
+        transition_matrix(["tight", "loose"], state_order=["tight"])
+
+def test_transition_matrix_terminal_state_absorbing():
+    matrix = transition_matrix(["tight", "loose"])
+    assert matrix.loc["loose", "loose"] == pytest.approx(1.0)
+
+def test_simulate_markov_chain_length():
+    matrix = pd.DataFrame(
+        [[0.8, 0.2], [0.3, 0.7]],
+        index=["tight", "loose"],
+        columns=["tight", "loose"],
+    )
+    path = simulate_markov_chain(matrix, start_state="tight", n_steps=10, seed=1)
+    assert isinstance(path, pd.Series)
+    assert len(path) == 11
+
+def test_regime_probabilities():
+    matrix = pd.DataFrame(
+        [[0.8, 0.2], [0.3, 0.7]],
+        index=["tight", "loose"],
+        columns=["tight", "loose"],
+    )
+    probs = regime_probabilities(matrix, current_state="tight", horizon=1)
+    assert probs.loc["tight"] == pytest.approx(0.8)
+    assert probs.sum() == pytest.approx(1.0)

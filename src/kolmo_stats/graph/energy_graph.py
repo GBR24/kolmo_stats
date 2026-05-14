@@ -1,10 +1,10 @@
 """
 Internal graph engine for energy market relationship graphs.
 
-Not part of the public 20-function API.
+Not part of the public analytics API.
 
 Two entry points:
-- _build_energy_graph(): generic builder from node/edge dicts (used by Graph Intelligence)
+- _build_energy_graph(): generic builder from node/edge dicts (used by knowledge_graph)
 - _build_from_connections(): builder from the flat connection-dict format used in examples
 """
 from __future__ import annotations
@@ -21,7 +21,7 @@ def _build_energy_graph(
 ) -> nx.DiGraph:
     """
     Build a networkx DiGraph from the NODES and EDGES format defined in
-    Graph Intelligence/market_graph.py.
+    knowledge_graph/market_graph.py.
 
     Parameters
     ----------

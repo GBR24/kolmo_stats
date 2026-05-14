@@ -19,10 +19,10 @@ def seasonal_zscore(
     """
     Z-score relative to a seasonal group (month, quarter, etc.).
 
-    Instead of comparing a value to the whole history, this compares
-    it only to the same seasonal period in prior years — e.g., January
-    vs other Januaries. This is how analysts think about gas storage,
-    seasonal cracks, and power demand.
+    Instead of comparing a value to the whole history, this compares it only
+    to the same seasonal period in the supplied history — e.g., January vs
+    other Januaries. This is how analysts think about gas storage, seasonal
+    cracks, and power demand.
 
     Parameters
     ----------

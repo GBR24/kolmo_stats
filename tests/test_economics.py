@@ -72,6 +72,10 @@ def test_breakeven_length_mismatch():
     with pytest.raises(ValueError, match="same length"):
         breakeven_price(100_000, [10_000], 5.0, [1_000, 1_000], 0.10)
 
+def test_breakeven_non_positive_production():
+    with pytest.raises(ValueError, match="production"):
+        breakeven_price(100_000, [10_000], 5.0, [-1_000], 0.10)
+
 def test_breakeven_explain():
     r = breakeven_price(
         capex=1_000_000,

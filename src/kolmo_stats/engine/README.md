@@ -1,10 +1,10 @@
-# kolmo.engine
+# kolmo_stats.engine
 
 Internal numerical computing layer. Not part of the public API.
 
 ## Purpose
 
-`kolmo.engine` exists so that performance-critical routines can be replaced
+`kolmo_stats.engine` exists so that performance-critical routines can be replaced
 with faster implementations (e.g. C++ via pybind11) without touching any
 public-facing code. Every public function that does meaningful computation
 delegates to one of the modules here.
@@ -26,3 +26,5 @@ for C++ acceleration in later versions:
 - `numerical.py` → high-order curve differentiation, spline derivatives
 - `root_finding.py` → custom Brent / Newton implementations
 - `statistics.py` → high-frequency rolling statistics on large tick data
+- future scenario engine → Cholesky transforms and Monte Carlo paths
+- future regime engine → large Markov / HMM-style simulations

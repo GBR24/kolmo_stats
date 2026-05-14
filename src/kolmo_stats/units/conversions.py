@@ -17,17 +17,54 @@ KG_PER_MMBTU_LNG = 21.5            # approximate for LNG
 
 def bbl_to_metric_tons(barrels: float, bbl_per_ton: float = BBL_PER_METRIC_TON_CRUDE) -> float:
     """Convert barrels to metric tons."""
+    if bbl_per_ton <= 0:
+        raise ValueError("bbl_per_ton must be positive")
     return barrels / bbl_per_ton
 
 
 def metric_tons_to_bbl(tons: float, bbl_per_ton: float = BBL_PER_METRIC_TON_CRUDE) -> float:
     """Convert metric tons to barrels."""
+    if bbl_per_ton <= 0:
+        raise ValueError("bbl_per_ton must be positive")
     return tons * bbl_per_ton
 
 
 def usd_per_bbl_to_usd_per_ton(price: float, bbl_per_ton: float = BBL_PER_METRIC_TON_CRUDE) -> float:
     """Convert $/bbl crude price to $/metric ton."""
+    if bbl_per_ton <= 0:
+        raise ValueError("bbl_per_ton must be positive")
     return price * bbl_per_ton
+
+
+def usd_per_gal_to_usd_per_bbl(price: float) -> float:
+    """Convert $/US gal product price to $/bbl."""
+    return price * GAL_PER_BBL
+
+
+def usd_per_bbl_to_usd_per_gal(price: float) -> float:
+    """Convert $/bbl product price to $/US gal."""
+    return price / GAL_PER_BBL
+
+
+def product_tons_to_bbl(tons: float, bbl_per_ton: float) -> float:
+    """
+    Convert product metric tons to barrels using a product-specific factor.
+
+    Product density varies by grade/specification, so callers should pass the
+    appropriate barrels-per-metric-ton convention for the product.
+    """
+    if bbl_per_ton <= 0:
+        raise ValueError("bbl_per_ton must be positive")
+    return tons * bbl_per_ton
+
+
+def bbl_to_product_tons(barrels: float, bbl_per_ton: float) -> float:
+    """
+    Convert product barrels to metric tons using a product-specific factor.
+    """
+    if bbl_per_ton <= 0:
+        raise ValueError("bbl_per_ton must be positive")
+    return barrels / bbl_per_ton
 
 
 def gal_to_bbl(gallons: float) -> float:

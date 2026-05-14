@@ -1,5 +1,17 @@
 import pytest
-from kolmo_stats import curve_shape, calendar_spread, butterfly_spread, roll_yield, curve_slope
+import pandas as pd
+from kolmo_stats import (
+    curve_shape,
+    calendar_spread,
+    butterfly_spread,
+    roll_yield,
+    curve_slope,
+    prompt_spread,
+    m1_m3,
+    m1_m12,
+    time_spread_series,
+    annualized_carry,
+)
 
 
 # ── curve_shape ───────────────────────────────────────────────────────────────
@@ -117,3 +129,33 @@ def test_curve_slope_explain():
     r = curve_slope([90, 88, 86], explain=True)
     assert r["result"] < 0
     assert "backwardation" in r["inputs"]["interpretation"]
+
+def test_curve_slope_invalid_method():
+    with pytest.raises(ValueError):
+        curve_slope([90, 88, 86], method="spline")
+
+
+# ── carry / time-spread helpers ───────────────────────────────────────────────
+
+def test_prompt_spread():
+    curve = {"M1": 84.0, "M2": 82.0, "M3": 80.0, "M12": 75.0}
+    assert prompt_spread(curve) == pytest.approx(2.0)
+
+def test_m1_m3_and_m1_m12():
+    curve = {"M1": 84.0, "M2": 82.0, "M3": 80.0, "M12": 75.0}
+    assert m1_m3(curve) == pytest.approx(4.0)
+    assert m1_m12(curve) == pytest.approx(9.0)
+
+def test_time_spread_series():
+    near = pd.Series([84.0, 83.0])
+    far = pd.Series([80.0, 81.0])
+    result = time_spread_series(near, far)
+    assert isinstance(result, pd.Series)
+    assert result.tolist() == pytest.approx([4.0, 2.0])
+
+def test_annualized_carry_contango_positive():
+    result = annualized_carry(80, 84, days_between=30)
+    assert result == pytest.approx(0.05 * 365 / 30)
+
+def test_annualized_carry_backwardation_negative():
+    assert annualized_carry(84, 80, days_between=30) < 0

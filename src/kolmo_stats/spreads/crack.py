@@ -8,8 +8,9 @@ import pandas as pd
 
 from kolmo_stats.utils.explain import make_explain
 
-_SUPPORTED_RATIOS = {"3-2-1", "2-1-1", "simple"}
+_SUPPORTED_RATIOS = {"5-3-2", "3-2-1", "2-1-1", "simple"}
 _FORMULAS = {
+    "5-3-2": "((3 * gasoline) + (2 * distillate) - (5 * crude)) / 5",
     "3-2-1": "((2 * gasoline) + distillate - (3 * crude)) / 3",
     "2-1-1": "(gasoline + distillate - (2 * crude)) / 2",
     "simple": "gasoline - crude",
@@ -24,8 +25,11 @@ def crack_spread(
     explain: bool = False,
 ):
     """
-    Refinery crack spread — the margin a refiner earns by cracking crude
-    into refined products.
+    Refinery crack spread — a gross proxy for the margin between crude
+    input costs and refined product values.
+
+    Crack spreads do not include all product revenues, operating costs,
+    refinery yield differences, logistics, or location/specification effects.
 
     Supports scalars, lists, numpy arrays, and pandas Series.
 
@@ -36,9 +40,9 @@ def crack_spread(
     gasoline : numeric or array-like
         Gasoline price in $/bbl (multiply $/gal by 42 before passing).
     distillate : numeric or array-like, optional
-        Distillate (diesel/heating oil) price in $/bbl. Required for 3-2-1
-        and 2-1-1.
-    ratio : {"3-2-1", "2-1-1", "simple"}
+        Distillate (diesel/heating oil) price in $/bbl. Required for 5-3-2,
+        3-2-1, and 2-1-1.
+    ratio : {"5-3-2", "3-2-1", "2-1-1", "simple"}
         Crack spread ratio to use (default "3-2-1").
     explain : bool
 
@@ -50,25 +54,39 @@ def crack_spread(
     Examples
     --------
     >>> crack_spread(80, 100, 95, ratio="3-2-1")
-    10.0
+    18.333333333333332
     >>> crack_spread(80, 95, ratio="simple")
     15.0
     """
     if ratio not in _SUPPORTED_RATIOS:
         raise ValueError(f"ratio must be one of {_SUPPORTED_RATIOS}; got '{ratio}'")
-    if ratio in ("3-2-1", "2-1-1") and distillate is None:
+    uses_distillate = ratio in ("5-3-2", "3-2-1", "2-1-1")
+    if uses_distillate and distillate is None:
         raise ValueError(f"distillate is required for the {ratio} crack spread")
 
-    is_pandas = isinstance(crude, pd.Series) or isinstance(gasoline, pd.Series)
-    is_scalar = np.isscalar(crude) and np.isscalar(gasoline)
+    is_pandas = (
+        isinstance(crude, pd.Series)
+        or isinstance(gasoline, pd.Series)
+        or (uses_distillate and isinstance(distillate, pd.Series))
+    )
+    is_scalar = (
+        np.isscalar(crude)
+        and np.isscalar(gasoline)
+        and (not uses_distillate or np.isscalar(distillate))
+    )
     index = crude.index if isinstance(crude, pd.Series) else (
-        gasoline.index if isinstance(gasoline, pd.Series) else None
+        gasoline.index if isinstance(gasoline, pd.Series) else (
+            distillate.index if uses_distillate and isinstance(distillate, pd.Series) else None
+        )
     )
 
     c = np.asarray(crude, dtype=float)
     g = np.asarray(gasoline, dtype=float)
 
-    if ratio == "3-2-1":
+    if ratio == "5-3-2":
+        d = np.asarray(distillate, dtype=float)
+        result = (3 * g + 2 * d - 5 * c) / 5
+    elif ratio == "3-2-1":
         d = np.asarray(distillate, dtype=float)
         result = (2 * g + d - 3 * c) / 3
     elif ratio == "2-1-1":
@@ -85,11 +103,18 @@ def crack_spread(
     if explain:
         return make_explain(
             result=result,
-            explanation=f"Refinery crack spread using the {ratio} ratio.",
+            explanation=(
+                f"Gross refinery crack spread proxy using the {ratio} ratio."
+            ),
             formula=_FORMULAS[ratio],
             inputs={
                 "crude": float(np.mean(c)),
                 "gasoline": float(np.mean(g)),
+                "distillate": (
+                    float(np.mean(np.asarray(distillate, dtype=float)))
+                    if distillate is not None
+                    else None
+                ),
                 "ratio": ratio,
             },
         )

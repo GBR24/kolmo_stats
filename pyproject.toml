@@ -5,11 +5,11 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "kolmo-stats"
 version = "0.2.0"
-description = "Energy market analytics — statistics, curves, spreads, risk, and project economics"
+description = "Oil and gas market analytics — statistics, curves, spreads, risk, and project economics"
 readme = "README.md"
 requires-python = ">=3.10"
 license = {text = "MIT"}
-keywords = ["energy", "oil", "gas", "LNG", "power", "trading", "risk", "analytics"]
+keywords = ["energy", "oil", "gas", "LNG", "crude", "products", "trading", "risk", "analytics"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Financial and Insurance Industry",
@@ -35,3 +35,4 @@ where = ["src"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+pythonpath = ["src"]

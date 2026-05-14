@@ -14,10 +14,10 @@ No coding required. Open an issue to:
 Implement a new analytical function in one of the existing modules.
 
 Good first targets:
-- `kolmo/spreads/` — new spread types (frac spread, dark spread, clean spark)
-- `kolmo/curves/` — new curve analytics (contango carry, roll cost series)
-- `kolmo/economics/` — IRR, payback period, sensitivity analysis
-- `kolmo/stats/` — new statistical measures
+- `src/kolmo_stats/spreads/` — new spread types and oil/gas differentials
+- `src/kolmo_stats/curves/` — new curve analytics and carry measures
+- `src/kolmo_stats/economics/` — IRR, payback period, sensitivity analysis
+- `src/kolmo_stats/stats/` — new statistical measures and regimes
 
 **Guidelines for a new function:**
 - Add type hints and a docstring with a formula and an example
@@ -34,13 +34,13 @@ Larger features:
 - Volatility surface and smile analytics
 - Forward curve construction and interpolation
 
-These go in new sub-modules under `kolmo/`. Open an issue first to discuss scope.
+These go in new sub-modules under `src/kolmo_stats/`. Open an issue first to discuss scope.
 
 ### Level 4 — Numerical engine improvements
-Contribute to `kolmo/engine/`:
+Contribute to `src/kolmo_stats/engine/`:
 - Improve numerical precision of existing routines
 - Add new root-finding or optimisation primitives
-- Prepare the interface for future C++ backends (see `cpp/DESIGN.md`)
+- Prepare the interface for future native backends (see `native/DESIGN.md`)
 
 This level requires understanding the internal dispatch architecture.
 
@@ -52,6 +52,13 @@ cd kolmo_stats
 pip install -e ".[dev]"
 pytest tests/
 ```
+
+## More contributor docs
+
+- [docs/CONVENTIONS.md](docs/CONVENTIONS.md) documents signs, units, and market conventions.
+- [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) gives the checklist for adding or changing functions.
+- [native/README.md](native/README.md) explains how future C++ code should stay hidden behind Python APIs.
+- [knowledge_graph/CONTRIBUTING.md](knowledge_graph/CONTRIBUTING.md) covers market graph contributions.
 
 ## Style
 

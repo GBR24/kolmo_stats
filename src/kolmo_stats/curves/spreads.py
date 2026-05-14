@@ -74,7 +74,8 @@ def butterfly_spread(
     Futures butterfly spread: front - 2*middle + back.
 
     A positive butterfly means the middle contract is cheap relative to the
-    wings, often signalling a kink or anomaly in the curve.
+    wings, often signalling a kink or anomaly in the curve. This simple form
+    assumes the three tenors are evenly spaced.
 
     Parameters
     ----------

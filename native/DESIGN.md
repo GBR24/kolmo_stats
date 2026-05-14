@@ -1,31 +1,34 @@
-# C++ Backend Design
+# Native Backend Design
+
+This document describes how optional C++ backends should plug into the Python
+package. The public API must stay Python-first and easy to use.
 
 ## Dispatch architecture
 
 ```
 Python public API
-  kolmo.npv(...)
-  kolmo.curve_slope(...)
-  kolmo.historical_var(...)
+  kolmo_stats.npv(...)
+  kolmo_stats.curve_slope(...)
+  kolmo_stats.historical_var(...)
 
         │
         ▼
 
-kolmo.engine  (pure Python by default)
-  kolmo/engine/numerical.py      → numpy.gradient
-  kolmo/engine/root_finding.py   → scipy.optimize.brentq
-  kolmo/engine/statistics.py     → pandas.rolling
+kolmo_stats.engine  (pure Python by default)
+  kolmo_stats/engine/numerical.py      → numpy.gradient
+  kolmo_stats/engine/root_finding.py   → scipy.optimize.brentq
+  kolmo_stats/engine/statistics.py     → pandas.rolling
 
         │  (optional, future)
         ▼
 
-kolmo._ext  (compiled C++ extension)
-  kolmo._ext.gradient(y, x)
-  kolmo._ext.brentq(f, a, b)
-  kolmo._ext.rolling_stats(arr, window)
+kolmo_stats._ext  (compiled C++ extension)
+  kolmo_stats._ext.gradient(y, x)
+  kolmo_stats._ext.brentq(f, a, b)
+  kolmo_stats._ext.rolling_stats(arr, window)
 ```
 
-When `kolmo._ext` is available, `kolmo.engine` delegates to it automatically.
+When `kolmo_stats._ext` is available, `kolmo_stats.engine` delegates to it automatically.
 When it is not present, the pure Python path is used. No user code changes.
 
 ## Binding technologies under consideration
@@ -39,7 +42,7 @@ When it is not present, the pure Python path is used. No user code changes.
 
 No decision has been made. The architecture supports any of these.
 
-## Priority C++ candidates
+## Priority native candidates
 
 1. **Rolling statistics** — rolling z-score, rolling correlation on large tick data
 2. **Root finding** — custom Brent / Newton for breakeven and calibration
@@ -47,8 +50,10 @@ No decision has been made. The architecture supports any of these.
 4. **Monte Carlo engine** — stochastic price path generation (GBM, OU, two-factor)
 5. **Storage valuation** — dynamic programming on price grids
 6. **Graph shock propagation** — node cascade at scale
+7. **Correlated scenario generation** — Cholesky / covariance transforms at scale
+8. **Regime engines** — Markov and HMM-style transition simulations
 
-## v0.1 status
+## Current status
 
-No C++ code. Pure Python only. This file describes the future architecture so
+No native code. Pure Python only. This file describes the future architecture so
 contributors can design the engine layer consistently from the start.

@@ -16,10 +16,12 @@ def spark_spread(
     explain: bool = False,
 ):
     """
-    Estimate the margin for a gas-fired power plant (spark spread).
+    Estimate the gross margin for a gas-fired power plant (spark spread).
 
     The spark spread measures whether it is profitable to burn gas to generate
-    power. A positive spread means generation is economic.
+    power before non-fuel variable costs, emissions costs, start costs, and
+    operating constraints. A positive gross spread means fuel economics are
+    favourable.
 
     Parameters
     ----------
@@ -28,7 +30,8 @@ def spark_spread(
     gas_price : numeric or array-like
         Gas price in $/MMBtu.
     heat_rate : float
-        Thermal efficiency of the plant in MMBtu/MWh.
+        Fuel input needed to generate 1 MWh, in MMBtu/MWh. Lower heat rate
+        means a more efficient plant.
         Typical CCGT: 6.5–7.5. Typical OCGT: 9–11.
     explain : bool
 
@@ -62,8 +65,8 @@ def spark_spread(
         return make_explain(
             result=result,
             explanation=(
-                "Spark spread: profitability of generating power from gas. "
-                "Positive = generation is economic."
+                "Gross spark spread: power revenue minus gas fuel cost. "
+                "Positive = fuel economics are favourable before other costs."
             ),
             formula="power_price - gas_price * heat_rate",
             inputs={"power_price": power_price, "gas_price": gas_price, "heat_rate": heat_rate},

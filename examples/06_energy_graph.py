@@ -1,9 +1,9 @@
 """
 Example 6 — Energy Market Graph (experimental / internal)
 
-Neither function is part of the 20-function public API.
+Neither function is part of the public analytics API.
 - _build_from_connections: generic builder from free-form connection dicts
-- _build_energy_graph: builds the full market graph from Graph Intelligence NODES/EDGES
+- _build_energy_graph: builds the full market graph from knowledge_graph NODES/EDGES
 """
 from kolmo_stats.graph.energy_graph import _build_from_connections, _build_energy_graph
 
@@ -67,11 +67,11 @@ for src, dst in G.in_edges("Brent"):
     attrs = G[src]["Brent"]
     print(f"  {src}  (weight={attrs['weight']})")
 
-# ── Full market graph from Graph Intelligence ──────────────────────────────────
+# ── Full market graph from knowledge_graph ────────────────────────────────────
 print()
-print("=== Full market graph (Graph Intelligence) ===")
+print("=== Full market graph (knowledge_graph) ===")
 import sys, os
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "Graph Intelligence"))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "knowledge_graph"))
 from market_graph import NODES, EDGES, CLUSTER_COLOR, build_graph
 
 G_full = build_graph()

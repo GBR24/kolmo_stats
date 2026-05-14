@@ -1,5 +1,5 @@
 """
-Rolling statistical helpers used by kolmo.stats.
+Rolling statistical helpers used by kolmo_stats.stats.
 
 Thin wrappers around pandas rolling so that the computation logic lives
 in one place. Future C++ backends for high-frequency rolling calculations

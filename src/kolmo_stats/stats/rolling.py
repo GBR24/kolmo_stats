@@ -46,6 +46,11 @@ def rolling_zscore(
     >>> prices = pd.Series([80, 82, 85, 79, 90, 75, 95])
     >>> rolling_zscore(prices, window=3)
     """
+    if window <= 0:
+        raise ValueError("window must be positive")
+    if min_periods is not None and min_periods <= 0:
+        raise ValueError("min_periods must be positive")
+
     if not isinstance(series, pd.Series):
         series = pd.Series(series, dtype=float)
 

@@ -102,6 +102,10 @@ def weighted_mean(
     if ignore_nan:
         mask = ~(np.isnan(v) | np.isnan(w))
         v, w = v[mask], w[mask]
+    elif np.any(np.isnan(v)) or np.any(np.isnan(w)):
+        raise ValueError(
+            "Values or weights contain NaN. Set ignore_nan=True to skip pairs."
+        )
 
     if len(v) == 0:
         raise ValueError("No valid (non-NaN) value/weight pairs found")

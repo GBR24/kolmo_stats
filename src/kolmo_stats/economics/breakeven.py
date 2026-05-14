@@ -6,7 +6,6 @@ from __future__ import annotations
 import numpy as np
 
 from kolmo_stats.engine.arrays import coerce_array, validate_same_length
-from kolmo_stats.engine.root_finding import find_root
 from kolmo_stats.utils.explain import make_explain
 
 
@@ -75,23 +74,14 @@ def breakeven_price(
     df = 1.0 / (1 + discount_rate) ** t
 
     pv_prod = float(np.dot(prod, df))
-    if pv_prod == 0:
-        raise ValueError("Discounted production sum is zero — check production volumes")
+    if pv_prod <= 0:
+        raise ValueError("Discounted production sum must be positive")
 
     pv_var = float(np.dot(variable_opex_per_unit * prod, df))
     pv_fixed = float(np.dot(fopex, df))
     total_cost_pv = capex + pv_var + pv_fixed
 
     price = total_cost_pv / pv_prod
-
-    # Verify via root_finding engine (demonstrates the dispatch pattern)
-    def _npv_at_price(p: float) -> float:
-        revenue = p * prod
-        cashflows = revenue - variable_opex_per_unit * prod - fopex
-        return float(np.sum(cashflows * df)) - capex
-
-    # Algebraic solution is exact; root_finding is available for non-linear extensions
-    _ = find_root  # imported and available for future use
 
     if explain:
         return make_explain(
