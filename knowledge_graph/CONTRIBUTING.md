@@ -28,7 +28,7 @@ An edge is a directional relationship between two nodes: A influences B.
 
 Each edge has:
 - **weight** (`0.0–1.0`): how strongly A transmits to B. Use 0.9 for near-certain transmission, 0.5 for moderate, 0.3 for weak.
-- **sign** (`+1` or `-1`): `+1` means they move together, `-1` means they move in opposite directions.
+- **sign/correlation** (`+1` or `-1`): `+1` means they move together, `-1` means they move in opposite directions.
 
 ---
 
