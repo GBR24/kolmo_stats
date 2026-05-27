@@ -1,0 +1,159 @@
+version: "2026.05.26"
+
+clusters:
+  crude: {label: "Crude", color: "#ffb000"}
+  product: {label: "Products", color: "#00e5ff"}
+  balance: {label: "Physical Balance", color: "#00ff41"}
+  macro: {label: "Macro", color: "#ff69b4"}
+  geo: {label: "Geopolitical", color: "#ff3b30"}
+  energy: {label: "Cross-Energy", color: "#00ffcc"}
+
+nodes:
+  brent: {label: "Brent", cluster: crude, tier: 1, value: 95.0, unit: "USD/bbl", aliases: ["ICE Brent", "Brent crude", "BFOET"], description: "Global seaborne crude benchmark and anchor for many Atlantic Basin oil contracts.", related_formulas: [brent_wti_spread, curve_shape, calendar_spread, rolling_zscore, historical_var], strategy_hint: "Use Brent as the central crude beta and connect macro, balance, and geopolitical drivers before choosing directional exposure."}
+  wti: {label: "WTI", cluster: crude, tier: 1, value: 85.0, unit: "USD/bbl", aliases: ["NYMEX WTI", "West Texas Intermediate"], description: "US crude benchmark most sensitive to Cushing inventories, shale supply, and US export parity.", related_formulas: [brent_wti_spread, curve_shape, calendar_spread, rolling_zscore], strategy_hint: "Use WTI for US inland crude strategies and Brent-WTI relative value."}
+  dated_brent: {label: "Dated Brent", cluster: crude, tier: 3, value: 95.5, unit: "USD/bbl", aliases: ["Cash Brent", "Physical Brent"], description: "Physical Brent assessment linked closely to Brent futures and prompt crude balances.", related_formulas: [location_spread, quality_spread], strategy_hint: "Use as a physical-market reference when futures and cash dislocations matter."}
+  brent_spread: {label: "Brent Spread", cluster: crude, tier: 3, value: 0.5, unit: "USD/bbl", aliases: ["Brent timespread", "Brent calendar spread"], description: "Prompt Brent time spread that reflects inventory tightness and nearby balance pressure.", related_formulas: [calendar_spread, prompt_spread, annualized_carry], strategy_hint: "Use for curve structure and physical tightness rather than flat-price direction alone."}
+  wti_cushing: {label: "WTI Cushing", cluster: crude, tier: 3, value: 83.5, unit: "USD/bbl", aliases: ["Cushing WTI"], description: "Cushing-linked WTI price exposed to local storage and pipeline constraints.", related_formulas: [location_spread], strategy_hint: "Useful for inland storage and basis strategies."}
+  wti_houston: {label: "WTI Houston", cluster: crude, tier: 3, value: 87.0, unit: "USD/bbl", aliases: ["MEH", "Houston WTI"], description: "US Gulf Coast crude marker connected to export parity with global crude.", related_formulas: [location_spread, brent_wti_spread], strategy_hint: "Use when connecting US crude flows to seaborne export economics."}
+  dubai_oman: {label: "Dubai/Oman", cluster: crude, tier: 3, value: 92.5, unit: "USD/bbl", aliases: ["Dubai", "Oman"], description: "Middle East sour crude benchmark and signal for Asian crude demand.", related_formulas: [quality_spread, location_spread], strategy_hint: "Use for East-of-Suez crude relative value and Asian demand links."}
+  urals: {label: "Urals", cluster: crude, tier: 3, value: 75.0, unit: "USD/bbl", aliases: ["Russian Urals"], description: "Russian export crude grade affected by sanctions, freight, and discount dynamics.", related_formulas: [quality_spread, location_spread], strategy_hint: "Use mainly for sanctions and Russian-flow discount analysis."}
+
+  gasoline_crack: {label: "Gasoline Crack", cluster: product, tier: 1, value: 20.0, unit: "USD/bbl", aliases: ["RBOB crack"], description: "Gross gasoline refining margin proxy driven by gasoline inventories, demand, and refinery outages.", related_formulas: [crack_spread, rolling_zscore], strategy_hint: "Use for seasonal gasoline demand and refinery disruption strategies."}
+  diesel_crack: {label: "Diesel Crack", cluster: product, tier: 1, value: 25.0, unit: "USD/bbl", aliases: ["ULSD crack", "distillate crack"], description: "Gross distillate refining margin proxy tied to trucking, industry, stocks, gas switching, and Russian product flows.", related_formulas: [crack_spread, rolling_zscore], strategy_hint: "Use for macro-sensitive distillate strength and middle-distillate scarcity."}
+  jet_crack: {label: "Jet Crack", cluster: product, tier: 2, value: 22.0, unit: "USD/bbl", aliases: ["Jet fuel crack"], description: "Jet fuel refining margin proxy driven by aviation demand and distillate pool competition.", related_formulas: [crack_spread, rolling_zscore], strategy_hint: "Use when airline traffic or recession risk changes travel demand."}
+  naphtha_crack: {label: "Naphtha Crack", cluster: product, tier: 3, value: -4.0, unit: "USD/bbl", aliases: ["Naphtha", "Naphtha margin"], description: "Naphtha refining margin proxy linked to crude feedstock costs and petrochemical demand.", related_formulas: [crack_spread, rolling_zscore], strategy_hint: "Use for petrochemical-cycle and light-end relative value signals."}
+  rbob: {label: "RBOB Gasoline", cluster: product, tier: 3, value: 2.95, unit: "USD/gal", aliases: ["RBOB", "gasoline"], description: "US gasoline futures price connected to WTI feedstock and gasoline crack structure.", related_formulas: [usd_per_gal_to_usd_per_bbl, crack_spread], strategy_hint: "Use for flat gasoline exposure and US summer-driving-season strategies."}
+  ulsd: {label: "ULSD", cluster: product, tier: 3, value: 3.50, unit: "USD/gal", aliases: ["HO", "heating oil", "diesel futures"], description: "US ultra-low-sulfur diesel futures price linked to Brent feedstock and distillate cracks.", related_formulas: [usd_per_gal_to_usd_per_bbl, crack_spread], strategy_hint: "Use for diesel/heating-oil flat-price exposure."}
+  jet_fuel: {label: "Jet Fuel", cluster: product, tier: 3, value: 3.60, unit: "USD/gal", aliases: ["Jet", "aviation fuel"], description: "Aviation fuel price driven by crude costs, jet cracks, and airline traffic.", related_formulas: [usd_per_gal_to_usd_per_bbl, crack_spread], strategy_hint: "Use for aviation-demand and refinery-yield strategies."}
+
+  global_demand: {label: "Global Demand", cluster: balance, tier: 1, value: 0.0, unit: "pressure [-1,1]", aliases: ["oil demand", "global oil demand"], description: "Aggregate oil demand pressure from growth, China, industry, weather, and substitution.", related_formulas: [seasonal_zscore, rolling_correlation], strategy_hint: "Use as the broad bullish or bearish demand anchor."}
+  global_supply: {label: "Global Supply", cluster: balance, tier: 1, value: 0.0, unit: "pressure [-1,1]", aliases: ["oil supply", "global oil supply"], description: "Aggregate oil supply pressure from OPEC, shale, exports, sanctions, and disruptions.", related_formulas: [stress_matrix, scenario_pnl], strategy_hint: "Use as the broad bearish or bullish supply anchor."}
+  opec_supply: {label: "OPEC Supply", cluster: balance, tier: 2, value: 0.0, unit: "pressure [-1,1]", aliases: ["OPEC production"], description: "OPEC production volume pressure shaped by policy and quota behavior.", related_formulas: [scenario_pnl], strategy_hint: "Use with OPEC policy to separate headline policy from realized barrels."}
+  opec_spare: {label: "OPEC Spare Cap", cluster: balance, tier: 2, value: 0.0, unit: "pressure [-1,1]", aliases: ["spare capacity"], description: "Available OPEC spare capacity that can cap or amplify geopolitical risk premium.", related_formulas: [scenario_pnl], strategy_hint: "Use as a risk-premium buffer variable."}
+  us_shale: {label: "US Shale Supply", cluster: balance, tier: 2, value: 0.0, unit: "pressure [-1,1]", aliases: ["Permian", "US production"], description: "US shale output pressure affecting WTI, non-OPEC supply, and global balances.", related_formulas: [rolling_correlation], strategy_hint: "Use for US supply-growth or decline themes."}
+  non_opec_supply: {label: "Non-OPEC Supply", cluster: balance, tier: 3, value: 0.0, unit: "pressure [-1,1]", aliases: ["non OPEC supply"], description: "Non-OPEC production outside the OPEC supply channel.", related_formulas: [], strategy_hint: "Use as a supporting global supply bridge."}
+  china_demand: {label: "China Demand", cluster: balance, tier: 2, value: 0.0, unit: "pressure [-1,1]", aliases: ["Chinese oil demand"], description: "China-specific oil demand pressure tied to industry, imports, and stimulus.", related_formulas: [seasonal_zscore, rolling_correlation], strategy_hint: "Use for China-sensitive crude and naphtha strategies."}
+  oecd_inventories: {label: "OECD Inventories", cluster: balance, tier: 1, value: 0.0, unit: "pressure [-1,1]", aliases: ["OECD stocks", "oil inventories"], description: "Visible oil inventory pressure, usually inverse to flat price and time spreads.", related_formulas: [seasonal_zscore, calendar_spread], strategy_hint: "Use as the core storage/tightness signal."}
+  cushing_inv: {label: "Cushing Stocks", cluster: balance, tier: 2, value: 0.0, unit: "pressure [-1,1]", aliases: ["Cushing inventory", "Cushing stocks"], description: "Cushing storage pressure that directly affects WTI and inland basis.", related_formulas: [seasonal_zscore, location_spread], strategy_hint: "Use for WTI basis and storage congestion trades."}
+  distillate_inv: {label: "Distillate Inv", cluster: balance, tier: 2, value: 0.0, unit: "pressure [-1,1]", aliases: ["distillate stocks", "diesel inventories"], description: "Middle-distillate inventory pressure that affects diesel and jet cracks.", related_formulas: [seasonal_zscore, crack_spread], strategy_hint: "Use for diesel and jet scarcity signals."}
+  gasoline_inv: {label: "Gasoline Inv", cluster: balance, tier: 2, value: 0.0, unit: "pressure [-1,1]", aliases: ["gasoline stocks"], description: "Gasoline inventory pressure that usually moves inversely to gasoline cracks.", related_formulas: [seasonal_zscore, crack_spread], strategy_hint: "Use for US gasoline crack and RBOB seasonality."}
+  refinery_runs: {label: "Refinery Runs", cluster: balance, tier: 1, value: 0.0, unit: "pressure [-1,1]", aliases: ["refinery utilization", "runs"], description: "Refinery throughput pressure that links product margins to crude demand.", related_formulas: [crack_spread], strategy_hint: "Use to connect product margins back to crude pull."}
+  refinery_outages: {label: "Refinery Outages", cluster: balance, tier: 2, value: 0.0, unit: "pressure [-1,1]", aliases: ["refinery disruption", "turnaround"], description: "Unplanned or planned refinery downtime that tightens product supply and reduces runs.", related_formulas: [crack_spread, scenario_pnl], strategy_hint: "Use for product crack shock analysis."}
+  russia_exports: {label: "Russian Exports", cluster: balance, tier: 2, value: 0.0, unit: "pressure [-1,1]", aliases: ["Russian barrels"], description: "Russian crude and product export flow pressure affected by sanctions and logistics.", related_formulas: [location_spread, quality_spread], strategy_hint: "Use for Urals discounts and diesel crack risk."}
+  iran_exports: {label: "Iranian Exports", cluster: balance, tier: 3, value: 0.0, unit: "pressure [-1,1]", aliases: ["Iran exports"], description: "Iranian export volume pressure controlled by sanctions and regional risk.", related_formulas: [scenario_pnl], strategy_hint: "Use with Iran sanctions and Hormuz risk."}
+  floating_storage: {label: "Floating Storage", cluster: balance, tier: 3, value: 0.0, unit: "pressure [-1,1]", aliases: ["tanker storage"], description: "Crude held on vessels, a visible sign of surplus or dislocated flows.", related_formulas: [seasonal_zscore], strategy_hint: "Use as a supporting inventory pressure signal."}
+
+  global_gdp: {label: "Global GDP", cluster: macro, tier: 1, value: 0.0, unit: "pressure [-1,1]", aliases: ["GDP", "global growth"], description: "Global growth pressure that drives broad oil demand.", related_formulas: [rolling_correlation], strategy_hint: "Use as the macro demand anchor."}
+  china_activity: {label: "China Industry", cluster: macro, tier: 2, value: 0.0, unit: "pressure [-1,1]", aliases: ["China activity", "China industry"], description: "China industrial activity pressure tied to crude and petrochemical demand.", related_formulas: [rolling_correlation], strategy_hint: "Use for China-led demand and naphtha signals."}
+  mfg_pmi: {label: "Mfg PMI", cluster: macro, tier: 2, value: 0.0, unit: "pressure [-1,1]", aliases: ["PMI", "manufacturing PMI"], description: "Manufacturing activity pressure linked to freight, diesel demand, and global demand.", related_formulas: [lead_lag_correlation, rolling_correlation], strategy_hint: "Use for cyclical diesel and demand strategies."}
+  usd_index: {label: "USD Index", cluster: macro, tier: 1, value: 0.0, unit: "pressure [-1,1]", aliases: ["DXY", "dollar"], description: "US dollar strength, usually inverse to dollar-denominated commodity demand.", related_formulas: [rolling_correlation, lead_lag_correlation], strategy_hint: "Use as a financial-condition overlay for crude direction."}
+  recession_prob: {label: "Recession Risk", cluster: macro, tier: 2, value: 0.0, unit: "pressure [-1,1]", aliases: ["recession probability"], description: "Macro recession pressure that weakens demand and product cracks.", related_formulas: [transition_matrix, regime_probabilities], strategy_hint: "Use as a defensive filter for cyclical products."}
+  airline_traffic: {label: "Airline Traffic", cluster: macro, tier: 2, value: 0.0, unit: "pressure [-1,1]", aliases: ["aviation demand", "flights"], description: "Air travel activity pressure that supports jet fuel and jet cracks.", related_formulas: [seasonal_zscore, rolling_correlation], strategy_hint: "Use for jet demand and travel-cycle strategies."}
+  trucking: {label: "Freight/Trucking", cluster: macro, tier: 2, value: 0.0, unit: "pressure [-1,1]", aliases: ["freight", "road transport"], description: "Road freight pressure that supports diesel prices and cracks.", related_formulas: [rolling_correlation], strategy_hint: "Use for diesel demand confirmation."}
+  central_bank: {label: "Central Bank", cluster: macro, tier: 2, value: 0.0, unit: "pressure [-1,1]", aliases: ["Fed", "rates"], description: "Monetary policy pressure affecting USD, growth, and recession risk.", related_formulas: [lead_lag_correlation], strategy_hint: "Use to connect rates to USD and growth-sensitive oil demand."}
+  consumer_spending: {label: "Consumer Spending", cluster: macro, tier: 3, value: 0.0, unit: "pressure [-1,1]", aliases: ["retail spending"], description: "Consumer spending pressure affecting driving and travel demand.", related_formulas: [rolling_correlation], strategy_hint: "Use for gasoline and airline demand themes."}
+  risk_appetite: {label: "Risk Appetite", cluster: macro, tier: 3, value: 0.0, unit: "pressure [-1,1]", aliases: ["risk on", "risk off"], description: "Market risk sentiment that can amplify or dampen crude risk premia.", related_formulas: [rolling_correlation], strategy_hint: "Use as a tactical overlay, not as a standalone fundamental driver."}
+
+  opec_policy: {label: "OPEC+ Policy", cluster: geo, tier: 1, value: 0.0, unit: "pressure [-1,1]", aliases: ["OPEC", "OPEC cuts"], description: "OPEC+ policy stance controlling production discipline and market tightness.", related_formulas: [scenario_pnl, stress_matrix], strategy_hint: "Use as the policy lever for supply-side crude strategies."}
+  russia_sanctions: {label: "Russia Sanctions", cluster: geo, tier: 2, value: 0.0, unit: "pressure [-1,1]", aliases: ["Russian sanctions"], description: "Sanctions pressure on Russian exports, Urals discounts, and diesel cracks.", related_formulas: [scenario_pnl, stress_matrix], strategy_hint: "Use for geopolitical and product scarcity risk."}
+  iran_sanctions: {label: "Iran Sanctions", cluster: geo, tier: 2, value: 0.0, unit: "pressure [-1,1]", aliases: ["Iran sanctions"], description: "Sanctions pressure on Iranian exports and Hormuz risk.", related_formulas: [scenario_pnl, stress_matrix], strategy_hint: "Use for Gulf supply-risk scenarios."}
+  hormuz_risk: {label: "Hormuz Risk", cluster: geo, tier: 2, value: 0.0, unit: "pressure [-1,1]", aliases: ["Strait of Hormuz", "Hormuz"], description: "Regional chokepoint risk premium affecting crude supply and Brent.", related_formulas: [scenario_pnl, stress_matrix], strategy_hint: "Use as a high-impact geopolitical crude risk node."}
+  red_sea: {label: "Red Sea Disruption", cluster: geo, tier: 2, value: 0.0, unit: "pressure [-1,1]", aliases: ["Red Sea", "Suez", "Bab el-Mandeb"], description: "Shipping disruption pressure that increases freight time and product tightness.", related_formulas: [shipping_adjusted_spread, scenario_pnl], strategy_hint: "Use for freight-sensitive crude and diesel strategies."}
+  libya_iraq: {label: "Libya/Iraq Risk", cluster: geo, tier: 3, value: 0.0, unit: "pressure [-1,1]", aliases: ["Libya outage", "Iraq disruption"], description: "Regional outage risk affecting global crude supply and Brent risk premium.", related_formulas: [scenario_pnl], strategy_hint: "Use as a supporting MENA supply disruption node."}
+  venezuela: {label: "Venezuela", cluster: geo, tier: 3, value: 0.0, unit: "pressure [-1,1]", aliases: ["PDVSA"], description: "Venezuelan supply and sanctions pressure, especially for heavy sour barrels.", related_formulas: [scenario_pnl], strategy_hint: "Use for heavy-sour supply themes."}
+
+  ttf_gas: {label: "TTF Gas", cluster: energy, tier: 2, value: 0.0, unit: "pressure [-1,1]", aliases: ["TTF", "Dutch TTF", "European gas"], description: "European gas price pressure that can drive gas-to-oil switching and power prices.", related_formulas: [ttf_jkm_spread, henry_hub_ttf_arb, rolling_correlation], strategy_hint: "Use for cross-energy substitution and LNG arbitrage context."}
+  henry_hub: {label: "Henry Hub", cluster: energy, tier: 3, value: 0.0, unit: "pressure [-1,1]", aliases: ["HH", "US gas"], description: "US natural gas benchmark linked to LNG arbitrage into European gas.", related_formulas: [henry_hub_ttf_arb, lng_netback], strategy_hint: "Use for US-to-Europe gas arbitrage and LNG feedgas economics."}
+  power_prices: {label: "Power Prices", cluster: energy, tier: 3, value: 0.0, unit: "pressure [-1,1]", aliases: ["power"], description: "Power price pressure linked to gas prices and backup fuel burn.", related_formulas: [spark_spread], strategy_hint: "Use for power-gas-oil switching and spark-spread context."}
+  cold_winter: {label: "Cold Winter", cluster: energy, tier: 3, value: 0.0, unit: "pressure [-1,1]", aliases: ["cold weather", "winter"], description: "Weather-driven heating demand pressure affecting distillates and broad demand.", related_formulas: [seasonal_zscore], strategy_hint: "Use for seasonal heating oil and diesel crack analysis."}
+  renewables: {label: "Renewables", cluster: energy, tier: 3, value: 0.0, unit: "pressure [-1,1]", aliases: ["energy transition", "EV adoption"], description: "Renewable and electrification pressure that can displace oil demand over time.", related_formulas: [rolling_correlation], strategy_hint: "Use as a long-horizon demand displacement node."}
+
+edges:
+  - [global_demand, brent, 0.90, 1, "demand to crude", "Stronger demand tightens crude balances."]
+  - [global_supply, brent, 0.90, -1, "supply to crude", "More supply loosens crude balances."]
+  - [global_demand, wti, 0.75, 1, "demand to WTI", "Global demand also supports US crude."]
+  - [global_supply, wti, 0.80, -1, "supply to WTI", "Global supply pressure weighs on US crude."]
+  - [oecd_inventories, brent, 0.85, -1, "stocks to crude", "Visible stocks usually pressure flat price."]
+  - [oecd_inventories, brent_spread, 0.80, -1, "stocks to spread", "High inventories weaken backwardation."]
+  - [floating_storage, oecd_inventories, 0.60, 1, "float to OECD", "Floating storage indicates broader surplus."]
+  - [opec_policy, opec_supply, 0.90, -1, "policy to supply", "Tighter policy normally lowers OPEC supply."]
+  - [opec_policy, brent, 0.85, 1, "OPEC to Brent", "Cuts and discipline add crude risk premium."]
+  - [opec_supply, brent, 0.85, -1, "OPEC supply", "Higher OPEC supply weighs on Brent."]
+  - [opec_supply, global_supply, 0.75, 1, "OPEC to global", "OPEC barrels feed global supply."]
+  - [opec_spare, brent, 0.75, -1, "spare cap to premium", "Spare capacity dampens risk premium."]
+  - [cushing_inv, wti, 0.90, -1, "Cushing to WTI", "Cushing builds pressure WTI."]
+  - [cushing_inv, wti_cushing, 0.90, -1, "Cushing stocks", "Local inventories move Cushing basis."]
+  - [us_shale, wti, 0.80, -1, "shale to WTI", "Shale growth pressures WTI."]
+  - [us_shale, global_supply, 0.65, 1, "shale to global", "US supply contributes to global balances."]
+  - [us_shale, non_opec_supply, 0.70, 1, "shale to non-OPEC", "Shale is a key non-OPEC source."]
+  - [wti_cushing, wti_houston, 0.75, 1, "inland to coast", "Inland crude links to Gulf Coast basis."]
+  - [wti_houston, brent, 0.65, 1, "export parity", "Gulf Coast crude links US barrels to seaborne crude."]
+  - [non_opec_supply, global_supply, 0.70, 1, "non-OPEC supply", "Non-OPEC production feeds global supply."]
+  - [brent, dated_brent, 0.90, 1, "futures to physical", "Brent futures anchor physical assessments."]
+  - [dated_brent, brent, 0.85, 1, "physical to futures", "Cash market tightness feeds futures."]
+  - [brent, dubai_oman, 0.70, 1, "inter-benchmark", "Global crude benchmarks co-move."]
+  - [dubai_oman, brent, 0.55, 1, "East demand signal", "Asian crude strength can support Brent."]
+  - [russia_exports, global_supply, 0.60, 1, "Russian barrels", "Russian exports add to available supply."]
+  - [iran_exports, global_supply, 0.50, 1, "Iranian barrels", "Iranian exports add to available supply."]
+  - [russia_exports, urals, 0.75, 1, "export to grade", "Russian flows affect Urals pricing."]
+  - [brent, rbob, 0.85, 1, "feedstock cost", "Crude cost feeds product flat prices."]
+  - [brent, ulsd, 0.90, 1, "feedstock cost", "Crude cost feeds distillate flat price."]
+  - [brent, jet_fuel, 0.85, 1, "feedstock cost", "Crude cost feeds jet fuel flat price."]
+  - [wti, rbob, 0.80, 1, "US feedstock", "WTI is a key US gasoline feedstock anchor."]
+  - [gasoline_inv, gasoline_crack, 0.80, -1, "stocks to crack", "High gasoline stocks weaken cracks."]
+  - [distillate_inv, diesel_crack, 0.85, -1, "stocks to crack", "High distillate stocks weaken cracks."]
+  - [distillate_inv, jet_crack, 0.70, -1, "pool competition", "Distillate abundance can weaken jet cracks."]
+  - [refinery_outages, gasoline_crack, 0.80, 1, "outage to crack", "Outages tighten gasoline supply."]
+  - [refinery_outages, diesel_crack, 0.75, 1, "outage to crack", "Outages tighten diesel supply."]
+  - [refinery_outages, refinery_runs, 0.85, -1, "outage to runs", "Outages reduce refinery throughput."]
+  - [gasoline_crack, brent, 0.60, 1, "crack to crude pull", "Strong margins can lift crude runs."]
+  - [diesel_crack, brent, 0.65, 1, "crack to crude pull", "Strong distillate margins can lift crude demand."]
+  - [diesel_crack, refinery_runs, 0.65, 1, "margin to throughput", "Higher margins encourage refinery runs."]
+  - [refinery_runs, global_demand, 0.70, 1, "runs to crude demand", "Higher throughput increases crude demand."]
+  - [brent, naphtha_crack, 0.55, -1, "crude to naphtha crack", "Higher crude can compress the naphtha crack."]
+  - [china_activity, naphtha_crack, 0.55, 1, "petrochemical demand", "China activity supports naphtha demand."]
+  - [global_gdp, global_demand, 0.85, 1, "growth to demand", "Growth supports oil demand."]
+  - [china_activity, china_demand, 0.80, 1, "China to demand", "Industrial activity supports China demand."]
+  - [china_activity, brent, 0.70, 1, "China to crude", "China strength supports crude expectations."]
+  - [china_demand, global_demand, 0.65, 1, "China to global", "China demand contributes to global demand."]
+  - [mfg_pmi, global_demand, 0.65, 1, "PMI to demand", "Manufacturing activity supports oil demand."]
+  - [mfg_pmi, diesel_crack, 0.80, 1, "PMI to distillate", "Industrial activity supports diesel cracks."]
+  - [mfg_pmi, trucking, 0.65, 1, "PMI to freight", "Manufacturing feeds freight demand."]
+  - [trucking, ulsd, 0.75, 1, "freight to diesel", "Freight demand supports diesel flat price."]
+  - [trucking, diesel_crack, 0.70, 1, "freight to crack", "Freight demand supports diesel cracks."]
+  - [airline_traffic, jet_fuel, 0.90, 1, "flights to jet", "Flights support jet fuel demand."]
+  - [airline_traffic, jet_crack, 0.85, 1, "flights to crack", "Flights support jet cracks."]
+  - [consumer_spending, gasoline_crack, 0.60, 1, "spending to gasoline", "Consumers support gasoline demand."]
+  - [consumer_spending, airline_traffic, 0.60, 1, "spending to travel", "Consumer spending supports travel."]
+  - [recession_prob, global_gdp, 0.80, -1, "recession to GDP", "Recession risk weakens growth."]
+  - [recession_prob, brent, 0.75, -1, "recession to crude", "Recession risk weighs on crude."]
+  - [recession_prob, diesel_crack, 0.70, -1, "recession to distillate", "Recession risk weakens distillates."]
+  - [recession_prob, airline_traffic, 0.65, -1, "recession to travel", "Recession risk weakens travel."]
+  - [usd_index, brent, 0.75, -1, "USD to crude inverse", "Dollar strength often pressures crude."]
+  - [usd_index, wti, 0.75, -1, "USD to WTI", "Dollar strength often pressures WTI."]
+  - [central_bank, usd_index, 0.65, 1, "rates to USD", "Tighter policy supports USD."]
+  - [central_bank, global_gdp, 0.70, -1, "tightening to growth", "Tighter policy can weaken growth."]
+  - [central_bank, recession_prob, 0.55, 1, "tightening to risk", "Tighter policy can raise recession risk."]
+  - [risk_appetite, brent, 0.55, 1, "risk-on to crude", "Risk appetite can support commodity beta."]
+  - [russia_sanctions, russia_exports, 0.80, -1, "sanctions to exports", "Sanctions can reduce Russian exports."]
+  - [russia_sanctions, brent, 0.70, 1, "Russia risk", "Russian risk adds crude premium."]
+  - [russia_sanctions, diesel_crack, 0.75, 1, "Russia to diesel", "Russian product risk supports diesel cracks."]
+  - [russia_sanctions, urals, 0.80, -1, "sanctions to discount", "Sanctions widen Urals discounts."]
+  - [iran_sanctions, iran_exports, 0.80, -1, "sanctions to exports", "Sanctions can reduce Iranian exports."]
+  - [iran_sanctions, brent, 0.65, 1, "Iran risk", "Iran risk adds crude premium."]
+  - [iran_sanctions, hormuz_risk, 0.60, 1, "Iran to Hormuz", "Iran escalation can raise Hormuz risk."]
+  - [hormuz_risk, brent, 0.90, 1, "Hormuz premium", "Hormuz risk adds strong crude premium."]
+  - [hormuz_risk, global_supply, 0.75, -1, "Hormuz to supply", "Chokepoint risk threatens supply."]
+  - [red_sea, brent, 0.70, 1, "freight to crude", "Shipping disruption can add crude premium."]
+  - [red_sea, ulsd, 0.55, 1, "voyage time to diesel", "Longer voyages tighten diesel availability."]
+  - [libya_iraq, global_supply, 0.60, -1, "outage to supply", "Regional outages reduce supply."]
+  - [libya_iraq, brent, 0.65, 1, "MENA premium", "Regional risk adds crude premium."]
+  - [venezuela, global_supply, 0.40, 1, "heavy sour barrels", "Venezuelan barrels add supply when available."]
+  - [ttf_gas, diesel_crack, 0.55, 1, "gas to oil switching", "High gas prices can support oil products."]
+  - [ttf_gas, power_prices, 0.75, 1, "gas to power", "Gas prices drive power prices."]
+  - [henry_hub, ttf_gas, 0.50, 1, "LNG arb", "US gas can influence Europe through LNG arbitrage."]
+  - [cold_winter, ulsd, 0.65, 1, "heating demand", "Cold weather supports heating oil demand."]
+  - [cold_winter, diesel_crack, 0.60, 1, "heating season", "Cold weather supports distillate cracks."]
+  - [cold_winter, global_demand, 0.50, 1, "weather to demand", "Cold weather lifts oil demand."]
+  - [renewables, global_demand, 0.40, -1, "displacement", "Renewables can displace oil demand over time."]
+  - [power_prices, ulsd, 0.45, 1, "power backup burn", "High power prices can support backup fuel burn."]

@@ -22,6 +22,12 @@ All notable changes to `kolmo-stats` are documented here.
   and horizon probabilities.
 - Product unit helpers for $/gal vs $/bbl and product tons vs barrels.
 - 5-3-2 crack spread support.
+- YAML-backed packaged market graph with JSON, neighborhood, and
+  agent-context helpers.
+- Advanced quant helpers: OU half-life/calibration, spread residuals and
+  cointegration z-scores, realised/EWMA volatility, portfolio VaR
+  decomposition, native-ready portfolio scenario matrices, and curve PCA.
+- Formula catalog metadata for agent/tooling consumers.
 
 ---
 

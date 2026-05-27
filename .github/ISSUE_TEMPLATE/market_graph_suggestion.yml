@@ -1,0 +1,67 @@
+name: Suggest market graph knowledge
+description: Propose a new market variable or relationship for the Kolmo graph.
+title: "[graph] "
+labels: ["market-graph", "contribution"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this form even if you are not comfortable editing code. A maintainer can turn the idea into YAML.
+  - type: input
+    id: variable
+    attributes:
+      label: Market variable or relationship
+      description: Example: "Cold weather increases diesel crack" or "Add ARA gasoil stocks".
+      placeholder: "Higher Cushing stocks pressure WTI"
+    validations:
+      required: true
+  - type: dropdown
+    id: cluster
+    attributes:
+      label: Best cluster
+      options:
+        - crude
+        - product
+        - balance
+        - macro
+        - geo
+        - energy
+        - unsure
+    validations:
+      required: true
+  - type: dropdown
+    id: direction
+    attributes:
+      label: Direction of influence
+      description: If A rises, what usually happens to B?
+      options:
+        - same direction
+        - opposite direction
+        - unsure
+    validations:
+      required: true
+  - type: dropdown
+    id: strength
+    attributes:
+      label: Approximate strength
+      options:
+        - strong
+        - medium
+        - weak
+        - unsure
+    validations:
+      required: true
+  - type: textarea
+    id: reasoning
+    attributes:
+      label: Reasoning
+      description: Explain the market logic in plain English. Links or examples help, but are not required.
+      placeholder: "When stocks build at Cushing, local WTI availability rises and the benchmark often weakens versus Brent."
+    validations:
+      required: true
+  - type: textarea
+    id: aliases
+    attributes:
+      label: Common names or aliases
+      description: Optional names traders might use for this variable.
+      placeholder: "Cushing inventory, Cushing stocks, tank farm stocks"

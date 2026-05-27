@@ -1,4 +1,5 @@
-# Experimental shock propagation on energy market graphs.
-# Not part of the v0.1 public API.
-# Planned: propagate a price shock through a networkx graph using edge
-# weights and signs, producing an impact map across all connected nodes.
+# Shock propagation is intentionally deferred.
+#
+# The current graph API is descriptive: it exposes market relationships,
+# neighborhoods, and agent-readable context. Propagating shocks through products
+# and crude relationships requires a separate correlation/causality design.

@@ -1,0 +1,51 @@
+name: Suggest an oil and gas quant formula
+description: Propose a formula, model, or analytics helper for kolmo-stats.
+title: "[formula] "
+labels: ["formula", "contribution"]
+body:
+  - type: input
+    id: name
+    attributes:
+      label: Formula or model name
+      placeholder: "OU half-life for a spread"
+    validations:
+      required: true
+  - type: dropdown
+    id: domain
+    attributes:
+      label: Best domain
+      options:
+        - statistics
+        - curves
+        - spreads
+        - risk
+        - economics
+        - units
+        - unsure
+    validations:
+      required: true
+  - type: textarea
+    id: purpose
+    attributes:
+      label: What question should it answer?
+      placeholder: "How quickly does a Brent/WTI spread tend to mean-revert?"
+    validations:
+      required: true
+  - type: textarea
+    id: formula
+    attributes:
+      label: Formula or calculation steps
+      description: Plain English is fine. Include units and assumptions if you know them.
+      placeholder: "Fit x[t+1] = a + phi*x[t], then half-life = ln(2) / -ln(phi)."
+    validations:
+      required: true
+  - type: textarea
+    id: examples
+    attributes:
+      label: Example market use
+      placeholder: "Use it to choose a holding period for a mean-reversion spread strategy."
+  - type: textarea
+    id: references
+    attributes:
+      label: References or conventions
+      description: Optional links, books, papers, or desk conventions.

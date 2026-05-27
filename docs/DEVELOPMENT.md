@@ -13,7 +13,23 @@ abstractions.
 5. Preserve pandas indexes when returning Series.
 6. Add `explain=False` when the function is an analytics calculation.
 7. Add tests for formula, pandas/list handling, invalid inputs, and `explain=True`.
-8. Update `README.md` if the function is public.
+8. Add agent-facing metadata in `src/kolmo_stats/catalog.py`.
+9. Update `README.md` if the function is public.
+
+## Changing The Market Graph
+
+The packaged graph source is `src/kolmo_stats/graph/market_graph.yml`.
+`knowledge_graph/market_graph.py` is a compatibility shim only.
+
+Use the graph helpers for programmatic access:
+
+- `build_market_graph()` for a `networkx.DiGraph`
+- `market_graph_json()` for UI/agent contracts
+- `node_neighborhood(node_id)` for local driver/output views
+- `agent_graph_context(node_id)` for concise strategy-builder context
+
+Graph changes must keep validation green: no missing endpoints, invalid signs,
+invalid weights, duplicate edges, missing descriptions, or accidental isolates.
 
 ## Validation
 

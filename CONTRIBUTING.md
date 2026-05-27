@@ -5,10 +5,14 @@ kolmo is an open-source energy market analytics library. All contributions are w
 ## Four levels of contribution
 
 ### Level 1 — Add market knowledge
-No coding required. Open an issue to:
+No coding required. Open the **Suggest market graph knowledge** issue form to:
 - Suggest a new energy spread, formula, or convention
 - Report an incorrect formula or wrong sign
 - Propose a new use case or example
+
+Graph data is stored in simple YAML at
+`src/kolmo_stats/graph/market_graph.yml`. Maintainers can convert plain-English
+issues into YAML entries.
 
 ### Level 2 — Add a formula
 Implement a new analytical function in one of the existing modules.
@@ -24,6 +28,7 @@ Good first targets:
 - Accept list, numpy array, and pandas Series as inputs
 - Return float or pandas Series depending on input
 - Add `explain=False` parameter that returns a dict when True
+- Add agent-facing metadata in `src/kolmo_stats/catalog.py`
 - Add tests in `tests/`
 
 ### Level 3 — Add an energy-specific analytical model

@@ -17,7 +17,8 @@ This folder is the map for users and contributors.
 | `tests/` | Unit and regression tests. Every public function should have formula and validation coverage. |
 | `examples/` | Short runnable scripts that demonstrate realistic oil/gas workflows. |
 | `docs/` | User and contributor documentation. |
-| `knowledge_graph/` | Editable market relationship graph data and graph contribution guide. |
+| `src/kolmo_stats/graph/market_graph.yml` | Packaged YAML market relationship graph data. |
+| `knowledge_graph/` | Compatibility shim and graph contribution guide. |
 | `native/` | Optional future compiled backends. Users still call Python functions. |
 
 ## Local Workflow

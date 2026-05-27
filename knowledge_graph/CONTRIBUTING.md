@@ -1,96 +1,77 @@
-# Contributing to the Energy Market Graph
+# Contributing To The Energy Market Graph
 
-This folder contains the energy market relationship graph used by kolmo_stats.
-The goal is to map how variables in the energy market influence each other.
+The canonical graph now lives in:
 
-Anyone can contribute a new variable or relationship by editing `market_graph.py`.
-
----
-
-## Concepts
-
-### Nodes
-A node is any variable that matters in the energy market — a price, a flow, an indicator, a risk factor.
-
-Each node belongs to one of six clusters:
-
-| Cluster   | What goes here |
-|-----------|----------------|
-| `crude`   | Benchmark prices, differentials, timespreads |
-| `product` | Crack spreads, refined product prices |
-| `balance` | Supply, demand, inventories, refinery activity |
-| `macro`   | GDP, PMI, USD, recession risk, financial conditions |
-| `geo`     | OPEC+ policy, sanctions, shipping disruptions |
-| `energy`  | Natural gas, power prices, weather, renewables |
-
-### Edges
-An edge is a directional relationship between two nodes: A influences B.
-
-Each edge has:
-- **weight** (`0.0–1.0`): how strongly A transmits to B. Use 0.9 for near-certain transmission, 0.5 for moderate, 0.3 for weak.
-- **sign/correlation** (`+1` or `-1`): `+1` means they move together, `-1` means they move in opposite directions.
-
----
-
-## How to add a node
-
-Open `market_graph.py` and add an entry to the `NODES` dictionary under the right cluster section.
-
-```python
-"your_node_id": {"label": "Human Readable Name", "cluster": "balance", "tier": 2, "value": 0.0},
+```text
+src/kolmo_stats/graph/market_graph.yml
 ```
 
-**tier** is a size hint for visualisation:
-- `1` — benchmark / top-level importance
-- `2` — important supporting variable
-- `3` — secondary / detail variable
+The old `knowledge_graph/market_graph.py` file is only a compatibility shim.
+Do not edit Python dictionaries for graph data.
 
-**value** is the starting value:
-- For `crude` / `product` nodes: a USD price (e.g. `85.0` for $/bbl)
-- For all other nodes: `0.0` (pressure scale from -1 to +1)
+## If You Do Not Want To Use Git
 
-### Example — adding Canadian oil sands production
+Open a GitHub issue with the **Suggest market graph knowledge** form. You only
+need to explain the market relationship in plain English:
 
-```python
-# in the "balance" section of NODES
-"canada_oilsands": {"label": "Canada Oil Sands", "cluster": "balance", "tier": 2, "value": 0.0},
+- What variable influences what?
+- Does it move in the same direction or the opposite direction?
+- Is the relationship strong, medium, or weak?
+- Why does this make sense in oil/gas markets?
+
+A maintainer can convert that into YAML.
+
+## YAML Concepts
+
+Each node is a market variable. Each edge is a directional relationship:
+
+```yaml
+nodes:
+  cushing_inv:
+    label: "Cushing Stocks"
+    cluster: balance
+    tier: 2
+    value: 0.0
+    unit: "pressure [-1,1]"
+    aliases: ["Cushing inventory", "Cushing stocks"]
+    description: "Cushing storage pressure that directly affects WTI and inland basis."
+    related_formulas: [seasonal_zscore, location_spread]
+    strategy_hint: "Use for WTI basis and storage congestion trades."
+
+edges:
+  - [cushing_inv, wti, 0.90, -1, "Cushing to WTI", "Cushing builds pressure WTI."]
 ```
 
----
+## Fields
 
-## How to add an edge
+Node fields:
 
-Add a tuple to the `EDGES` list in `market_graph.py`:
+- `label`: readable display name.
+- `cluster`: one of `crude`, `product`, `balance`, `macro`, `geo`, `energy`.
+- `tier`: `1` benchmark, `2` important driver, `3` secondary detail.
+- `value`: starting price or neutral pressure.
+- `unit`: `USD/bbl`, `USD/gal`, or `pressure [-1,1]`.
+- `aliases`: names users and agents may type.
+- `description`: plain-English definition.
+- `related_formulas`: kolmo-stats functions relevant to the node.
+- `strategy_hint`: short trading or analysis context.
 
-```python
-("source_node_id", "target_node_id", weight, sign, "short description"),
+Edge fields:
+
+```yaml
+[source, target, weight, sign, label, rationale]
 ```
 
-Place it under the comment section that best describes the relationship.
+- `weight`: `0.0` to `1.0`; use `0.9` strong, `0.6` medium, `0.4` weak.
+- `sign`: `1` if source and target move together, `-1` if inverse.
+- `label`: short display text.
+- `rationale`: plain-English market logic.
 
-### Examples
+## Validation Checklist
 
-Canada oil sands output raises global supply:
-```python
-("canada_oilsands", "global_supply", 0.55, +1, "oilsands → global supply"),
-```
-
-Higher global supply pushes Brent down (already exists, shown for reference):
-```python
-("global_supply", "brent", 0.90, -1, "supply → crude"),
-```
-
-Cold weather increases heating oil demand:
-```python
-("cold_winter", "distillate_inv", 0.60, -1, "cold → heating draw"),
-```
-
----
-
-## Checklist before opening a PR
-
-- [ ] Node id uses `snake_case`
-- [ ] The cluster is the most appropriate one for the variable
-- [ ] Every edge has a clear, short label (e.g. `"sanctions → exports"`)
-- [ ] Weights are grounded in market logic, not guessed — add a comment if the value is non-obvious
-- [ ] No duplicate nodes or edges
+- Node ids use `snake_case`.
+- Every edge source and target already exists in `nodes`.
+- Every node has a description.
+- No duplicate edges.
+- No isolated nodes unless there is a clear reason.
+- Relationships explain market structure only; do not add shock propagation logic.

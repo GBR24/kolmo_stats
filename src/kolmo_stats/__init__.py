@@ -16,6 +16,12 @@ from kolmo_stats.stats.descriptive import mean, weighted_mean
 from kolmo_stats.stats.rolling import rolling_zscore
 from kolmo_stats.stats.seasonality import seasonal_zscore
 from kolmo_stats.stats.correlations import rolling_correlation, lead_lag_correlation
+from kolmo_stats.stats.cointegration import (
+    cointegration_beta,
+    cointegration_zscore,
+    spread_residual,
+)
+from kolmo_stats.stats.mean_reversion import mean_reversion_calibration, ou_half_life
 from kolmo_stats.stats.markov import (
     transition_matrix,
     simulate_markov_chain,
@@ -33,6 +39,7 @@ from kolmo_stats.curves.carry import (
     time_spread_series,
     annualized_carry,
 )
+from kolmo_stats.curves.factors import curve_factor_exposures, curve_pca
 
 from kolmo_stats.spreads.crack import crack_spread
 from kolmo_stats.spreads.spark import spark_spread
@@ -49,12 +56,14 @@ from kolmo_stats.risk.var import historical_var, expected_shortfall
 from kolmo_stats.risk.stress import scenario_pnl
 from kolmo_stats.risk.hedge import hedge_ratio
 from kolmo_stats.risk.rolling import rolling_var, rolling_expected_shortfall
-from kolmo_stats.risk.matrix import stress_matrix
+from kolmo_stats.risk.matrix import portfolio_scenario_matrix, stress_matrix
 from kolmo_stats.risk.cholesky import (
     cholesky_decompose,
     correlated_normals,
     correlated_price_shocks,
 )
+from kolmo_stats.risk.portfolio import component_var, marginal_var, portfolio_volatility
+from kolmo_stats.risk.volatility import ewma_volatility, realized_volatility
 
 from kolmo_stats.economics.npv import npv
 from kolmo_stats.economics.breakeven import breakeven_price
@@ -64,6 +73,13 @@ from kolmo_stats.units.conversions import (
     product_tons_to_bbl,
     bbl_to_product_tons,
 )
+from kolmo_stats.graph.market_graph import (
+    agent_graph_context,
+    build_market_graph,
+    market_graph_json,
+    node_neighborhood,
+)
+from kolmo_stats.catalog import FORMULA_CATALOG, formula_catalog, get_formula_metadata
 
 __version__ = "0.2.0"
 
@@ -75,6 +91,11 @@ __all__ = [
     "seasonal_zscore",
     "rolling_correlation",
     "lead_lag_correlation",
+    "cointegration_beta",
+    "spread_residual",
+    "cointegration_zscore",
+    "mean_reversion_calibration",
+    "ou_half_life",
     "transition_matrix",
     "simulate_markov_chain",
     "regime_probabilities",
@@ -89,6 +110,8 @@ __all__ = [
     "m1_m12",
     "time_spread_series",
     "annualized_carry",
+    "curve_pca",
+    "curve_factor_exposures",
     # spreads
     "crack_spread",
     "spark_spread",
@@ -108,9 +131,15 @@ __all__ = [
     "rolling_var",
     "rolling_expected_shortfall",
     "stress_matrix",
+    "portfolio_scenario_matrix",
     "cholesky_decompose",
     "correlated_normals",
     "correlated_price_shocks",
+    "portfolio_volatility",
+    "marginal_var",
+    "component_var",
+    "realized_volatility",
+    "ewma_volatility",
     # economics
     "npv",
     "breakeven_price",
@@ -119,4 +148,13 @@ __all__ = [
     "usd_per_bbl_to_usd_per_gal",
     "product_tons_to_bbl",
     "bbl_to_product_tons",
+    # graph
+    "build_market_graph",
+    "market_graph_json",
+    "node_neighborhood",
+    "agent_graph_context",
+    # catalog
+    "FORMULA_CATALOG",
+    "formula_catalog",
+    "get_formula_metadata",
 ]

@@ -5,7 +5,12 @@ Neither function is part of the public analytics API.
 - _build_from_connections: generic builder from free-form connection dicts
 - _build_energy_graph: builds the full market graph from knowledge_graph NODES/EDGES
 """
-from kolmo_stats.graph.energy_graph import _build_from_connections, _build_energy_graph
+from kolmo_stats.graph import (
+    _build_from_connections,
+    agent_graph_context,
+    build_market_graph,
+    market_graph_json,
+)
 
 connections = [
     {
@@ -70,13 +75,10 @@ for src, dst in G.in_edges("Brent"):
 # ── Full market graph from knowledge_graph ────────────────────────────────────
 print()
 print("=== Full market graph (knowledge_graph) ===")
-import sys, os
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "knowledge_graph"))
-from market_graph import NODES, EDGES, CLUSTER_COLOR, build_graph
-
-G_full = build_graph()
+G_full = build_market_graph()
 print(f"Nodes: {G_full.number_of_nodes()}")
 print(f"Edges: {G_full.number_of_edges()}")
+print(f"Version: {G_full.graph.get('version')}")
 
 clusters = {}
 for nid, attrs in G_full.nodes(data=True):
@@ -91,3 +93,12 @@ weighted = sorted(G_full.edges(data=True), key=lambda e: e[2].get("weight", 0), 
 for src, dst, attrs in weighted[:5]:
     sign_str = "+" if attrs.get("sign", 1) > 0 else "-"
     print(f"  {src} →{sign_str} {dst}  (weight={attrs['weight']}, label={attrs.get('label', '')})")
+
+print("\nAgent context for Brent:")
+context = agent_graph_context("Brent")
+print(f"  {context['summary']}")
+print(f"  formulas: {', '.join(context['related_formulas'])}")
+
+print("\nGraph JSON health:")
+health = market_graph_json()["health"]
+print(f"  isolated nodes: {health['isolated_nodes']}")

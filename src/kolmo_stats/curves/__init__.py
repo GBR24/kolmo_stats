@@ -9,6 +9,7 @@ from kolmo_stats.curves.carry import (
     time_spread_series,
     annualized_carry,
 )
+from kolmo_stats.curves.factors import curve_factor_exposures, curve_pca
 
 __all__ = [
     "curve_shape",
@@ -21,4 +22,6 @@ __all__ = [
     "m1_m12",
     "time_spread_series",
     "annualized_carry",
+    "curve_pca",
+    "curve_factor_exposures",
 ]

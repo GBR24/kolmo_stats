@@ -48,7 +48,7 @@ Start with [docs/README.md](docs/README.md) if you are contributing.
 pip install kolmo-stats
 ```
 
-Requires Python >= 3.10. Dependencies: numpy, pandas, scipy, networkx.
+Requires Python >= 3.10. Dependencies: numpy, pandas, scipy, networkx, PyYAML.
 
 ---
 
@@ -108,6 +108,11 @@ print(f"Breakeven: ${price:.2f}/bbl")
 | `seasonal_zscore(series, period)` | Z-score vs seasonal group (month, quarter, week) |
 | `rolling_correlation(x, y, window)` | Dynamic correlation between two series |
 | `lead_lag_correlation(x, y, max_lag)` | Which market moves first |
+| `cointegration_beta(y, x)` | OLS hedge beta for a two-leg spread |
+| `spread_residual(y, x)` | Residual spread after hedge-beta adjustment |
+| `cointegration_zscore(y, x)` | Z-score of a residual spread |
+| `mean_reversion_calibration(values)` | AR(1)/OU mean-reversion calibration |
+| `ou_half_life(values)` | Mean-reversion half-life |
 | `transition_matrix(states)` | Markov transition matrix for observed regimes |
 | `simulate_markov_chain(matrix, start, n_steps)` | Simulate regime paths |
 | `regime_probabilities(matrix, state, horizon)` | Future regime probabilities |
@@ -126,6 +131,8 @@ print(f"Breakeven: ${price:.2f}/bbl")
 | `m1_m12(curve)` | M1-M12 spread |
 | `time_spread_series(near, far)` | Time series of near minus far |
 | `annualized_carry(near, far, days)` | Contango/backwardation carry rate |
+| `curve_pca(curves)` | PCA factors for futures curves |
+| `curve_factor_exposures(curve_changes, components)` | Project curve moves onto PCA factors |
 
 ### Spreads
 
@@ -156,6 +163,12 @@ print(f"Breakeven: ${price:.2f}/bbl")
 | `cholesky_decompose(matrix)` | Cholesky factor for covariance/correlation matrices |
 | `correlated_normals(corr, n_sims)` | Correlated standard normal draws |
 | `correlated_price_shocks(vols, corr, n_sims)` | Correlated oil/gas price or P&L shocks |
+| `realized_volatility(returns)` | Annualised realised volatility |
+| `ewma_volatility(returns)` | Annualised exponentially weighted volatility |
+| `portfolio_volatility(weights, covariance)` | Portfolio volatility from covariance |
+| `marginal_var(weights, covariance)` | Marginal normal VaR by asset |
+| `component_var(weights, covariance)` | Component normal VaR by asset |
+| `portfolio_scenario_matrix(positions, scenarios)` | Scenario-by-asset P&L matrix |
 
 ### Project Economics
 
@@ -172,6 +185,19 @@ print(f"Breakeven: ${price:.2f}/bbl")
 | `usd_per_bbl_to_usd_per_gal(price)` | Convert product $/bbl to $/gal |
 | `product_tons_to_bbl(tons, bbl_per_ton)` | Convert product tons to barrels by density convention |
 | `bbl_to_product_tons(barrels, bbl_per_ton)` | Convert barrels to product tons by density convention |
+
+### Market Graph
+
+| Function | Description |
+|---|---|
+| `build_market_graph()` | Packaged energy relationship graph as `networkx.DiGraph` |
+| `market_graph_json()` | UI/agent JSON contract with nodes, edges, metadata, and health |
+| `node_neighborhood(node_id, depth)` | Direct drivers and outputs around a node |
+| `agent_graph_context(node_id, depth)` | Concise strategy-builder context for a market node |
+
+The graph source is YAML at `src/kolmo_stats/graph/market_graph.yml`. It is
+descriptive only: it explains market connections for humans, UIs, and agents.
+Shock propagation is intentionally deferred.
 
 ---
 
@@ -222,7 +248,7 @@ pip install -e ".[dev]"
 pytest tests/ -v
 ```
 
-151 tests, all green.
+163 tests, all green.
 
 ---
 

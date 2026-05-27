@@ -40,11 +40,10 @@ def _build_energy_graph(
 
     Examples
     --------
-    >>> from kolmo_stats.graph.energy_graph import _build_energy_graph
-    >>> from kolmo_stats.graph.market_graph import NODES, EDGES, CLUSTER_COLOR
-    >>> G = _build_energy_graph(NODES, EDGES, CLUSTER_COLOR)
+    >>> from kolmo_stats.graph import build_market_graph
+    >>> G = build_market_graph()
     >>> G.number_of_nodes(), G.number_of_edges()
-    (50, 80)
+    (53, 88)
     """
     G = nx.DiGraph()
 
