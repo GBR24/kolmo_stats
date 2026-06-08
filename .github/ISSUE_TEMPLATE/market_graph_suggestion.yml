@@ -11,7 +11,7 @@ body:
     id: variable
     attributes:
       label: Market variable or relationship
-      description: Example: "Cold weather increases diesel crack" or "Add ARA gasoil stocks".
+      description: 'Example: "Cold weather increases diesel crack" or "Add ARA gasoil stocks".'
       placeholder: "Higher Cushing stocks pressure WTI"
     validations:
       required: true
