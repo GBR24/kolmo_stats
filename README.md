@@ -15,7 +15,7 @@ from kolmo_stats import crack_spread, curve_shape, historical_var, npv, breakeve
 ## What is kolmo?
 
 kolmo provides simple, well-documented, mathematically sound tools for energy traders,
-analysts, and risk teams — focused first on crude oil, refined products, natural
+analysts, and risk teams. Focused first on crude oil, refined products, natural
 gas, LNG, and related derivatives.
 
 It works with data you already have: pandas Series, DataFrames, NumPy arrays, lists,
@@ -203,7 +203,7 @@ Shock propagation is intentionally deferred.
 
 ## explain=True
 
-Most analytics functions accept `explain=True` and return a dict with the result,
+Most analytical functions accept `explain=True` and return a dict with the result,
 a plain-English explanation, the formula, and the key inputs.
 
 ```python
@@ -216,39 +216,6 @@ print(crack_spread(80, 103, 110, ratio="3-2-1", explain=True))
 #   'inputs': {'crude': 80.0, 'gasoline': 103.0, 'distillate': 110.0, 'ratio': '3-2-1'}
 # }
 ```
-
----
-
-## Internal engine layer
-
-kolmo-stats uses an internal `kolmo_stats.engine` layer for numerical routines:
-
-```
-kolmo_stats.curve_slope(brent_curve)
-    └── kolmo_stats.engine.numerical.average_slope(prices)
-            └── numpy.gradient(prices)    # default Python backend
-            └── kolmo_stats._ext.gradient(...)  # future C++ backend
-```
-
-This layer is not part of the public API. It exists so that future versions can
-add high-performance backends for simulation-heavy models while keeping the same
-public API.
-
-> **Strategic note:** kolmo starts with pure Python for simplicity and transparency.
-> The architecture includes an internal engine layer so that future versions can add
-> high-performance C++ backends for simulation-heavy and optimisation-heavy energy
-> models, while preserving the same simple Python API. See `native/DESIGN.md`.
-
----
-
-## Running tests
-
-```bash
-pip install -e ".[dev]"
-pytest tests/ -v
-```
-
-163 tests, all green.
 
 ---
 
