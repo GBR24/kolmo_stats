@@ -2,6 +2,8 @@
 
 Kolmo is the ultimate intelligence and analysis toolkit for Oil & Gas trading. 
 
+Building the world's largest open-source intelligence graph for energy markets.
+
 ---
 
 ## What is kolmo?
@@ -30,7 +32,6 @@ add formulas without learning the whole codebase first.
 | `examples/` | Runnable examples by topic |
 | `docs/` | User conventions, development notes, and architecture guide |
 | `knowledge_graph/` | Community-editable oil/gas market relationship graph |
-| `native/` | Optional future compiled backends, called through Python |
 
 Start with [docs/README.md](docs/README.md) if you are contributing.
 
