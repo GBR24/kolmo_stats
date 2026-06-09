@@ -1,22 +1,16 @@
 # Kolmo
 
-Oil and gas market analytics for Python — statistics, curves, spreads, risk, units, and project economics.
-
-```
-pip install kolmo-stats
-```
-
-```python
-from kolmo_stats import crack_spread, curve_shape, historical_var, npv, breakeven_price
-```
+Kolmo is the ultimate intelligence and analysis toolkit for Oil & Gas trading. 
 
 ---
 
 ## What is kolmo?
 
-kolmo provides simple, well-documented, mathematically sound tools for energy traders,
+kolmo provides simple, well-documented repo with tools for energy traders,
 analysts, and risk teams. Focused first on crude oil, refined products, natural
 gas, LNG, and related derivatives.
+
+This repo aims to bring innovation to the field and the first real AI structure focused on Oil & Gas trading.
 
 It works with data you already have: pandas Series, DataFrames, NumPy arrays, lists,
 and dicts. No API keys. No data downloads. No dependencies beyond the standard
@@ -26,7 +20,7 @@ scientific Python stack.
 
 ## Repository layout
 
-kolmo-stats is organised so users can find examples quickly and contributors can
+kolmo_stats is organised so users can find examples quickly and contributors can
 add formulas without learning the whole codebase first.
 
 | Path | Purpose |
@@ -83,15 +77,7 @@ print(f"VaR 95%: ${historical_var(returns):,.0f}")
 cashflows = [80, 120, 140, 130, 110, 90, 70, 50, 30]
 print(f"NPV: ${npv(cashflows, discount_rate=0.12, initial_investment=400):.1f}M")
 
-# Breakeven oil price
-price = breakeven_price(
-    capex=500_000_000,
-    fixed_opex=[30_000_000] * 15,
-    variable_opex_per_unit=12.0,
-    production=[5_000_000] * 15,
-    discount_rate=0.10,
-)
-print(f"Breakeven: ${price:.2f}/bbl")
+
 ```
 
 ---
@@ -102,7 +88,6 @@ print(f"Breakeven: ${price:.2f}/bbl")
 
 | Function | Description |
 |---|---|
-| `mean(values)` | Arithmetic mean with NaN handling |
 | `weighted_mean(values, weights)` | Weighted average (VWAP, exposure-weighted) |
 | `rolling_zscore(series, window)` | How extreme is the current value vs recent history |
 | `seasonal_zscore(series, period)` | Z-score vs seasonal group (month, quarter, week) |
