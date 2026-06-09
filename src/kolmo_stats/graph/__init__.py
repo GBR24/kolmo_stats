@@ -5,11 +5,13 @@ from kolmo_stats.graph.market_graph import (
     get_market_edges,
     get_market_nodes,
     graph_health,
+    graph_context_bundle,
     load_market_graph_data,
     market_graph_json,
     market_graph_version,
     node_neighborhood,
     resolve_node_id,
+    search_market_nodes,
 )
 
 __all__ = [
@@ -20,9 +22,11 @@ __all__ = [
     "get_market_edges",
     "get_market_nodes",
     "graph_health",
+    "graph_context_bundle",
     "load_market_graph_data",
     "market_graph_json",
     "market_graph_version",
     "node_neighborhood",
     "resolve_node_id",
+    "search_market_nodes",
 ]

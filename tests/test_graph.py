@@ -3,11 +3,13 @@ import pytest
 from kolmo_stats.graph import (
     agent_graph_context,
     build_market_graph,
+    graph_context_bundle,
     graph_health,
     load_market_graph_data,
     market_graph_json,
     node_neighborhood,
     resolve_node_id,
+    search_market_nodes,
 )
 
 
@@ -33,6 +35,23 @@ def test_market_graph_json_contract_and_health():
     assert health["node_count"] == 53
     assert health["edge_count"] == 88
     assert payload["nodes"][0]["drivers"] is not None
+    brent = next(node for node in payload["nodes"] if node["id"] == "brent")
+    assert brent["data_bindings"]
+    assert brent["data_bindings"][0]["kind"] == "live_price"
+
+
+def test_graph_search_and_context_bundle_include_bindings():
+    matches = search_market_nodes("diesel crack and refinery runs")
+    assert matches
+    assert matches[0]["id"] in {"diesel_crack", "refinery_runs"}
+
+    bundle = graph_context_bundle("diesel crack and refinery runs", depth=1)
+    assert bundle["version"]
+    assert bundle["matched_nodes"]
+    assert bundle["nodes"]
+    assert bundle["edges"]
+    assert bundle["data_bindings"]
+    assert "crack_spread" in bundle["related_formulas"]
 
 
 def test_node_neighborhood_and_alias_resolution():

@@ -76,12 +76,14 @@ from kolmo_stats.units.conversions import (
 from kolmo_stats.graph.market_graph import (
     agent_graph_context,
     build_market_graph,
+    graph_context_bundle,
     market_graph_json,
     node_neighborhood,
+    search_market_nodes,
 )
 from kolmo_stats.catalog import FORMULA_CATALOG, formula_catalog, get_formula_metadata
 
-__version__ = "0.2.0"
+__version__ = "0.3.0"
 
 __all__ = [
     # stats
@@ -150,8 +152,10 @@ __all__ = [
     "bbl_to_product_tons",
     # graph
     "build_market_graph",
+    "graph_context_bundle",
     "market_graph_json",
     "node_neighborhood",
+    "search_market_nodes",
     "agent_graph_context",
     # catalog
     "FORMULA_CATALOG",
