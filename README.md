@@ -1,4 +1,4 @@
-# kolmo
+# Kolmo
 
 Oil and gas market analytics for Python — statistics, curves, spreads, risk, units, and project economics.
 
