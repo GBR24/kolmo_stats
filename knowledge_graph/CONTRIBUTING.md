@@ -9,13 +9,27 @@ src/kolmo_stats/graph/market_graph.yml
 The old `knowledge_graph/market_graph.py` file is only a compatibility shim.
 Do not edit Python dictionaries for graph data.
 
+## View The Current Graph Locally
+
+Clone the repo, install the package, and run the local viewer:
+
+```bash
+pip install -e .
+python examples/08_market_graph_viewer.py
+```
+
+Then open `http://127.0.0.1:8000`. The viewer shows current nodes,
+relationships, clusters, search, node details, edge rationale, and graph health.
+
 ## If You Do Not Want To Use Git
 
 Open a GitHub issue with the **Suggest market graph knowledge** form. You only
-need to explain the market relationship in plain English:
+need to explain the market knowledge in plain English:
 
-- What variable influences what?
-- Does it move in the same direction or the opposite direction?
+- Are you suggesting a new market variable, a relationship, or a correction?
+- For a new variable: what does it mean, which cluster fits best, and what names do traders use?
+- For a relationship: what variable influences what?
+- Does the relationship move in the same direction or the opposite direction?
 - Is the relationship strong, medium, or weak?
 - Why does this make sense in oil/gas markets?
 

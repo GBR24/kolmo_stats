@@ -1,24 +1,47 @@
 name: Suggest market graph knowledge
-description: Propose a new market variable or relationship for the Kolmo graph.
+description: Propose a new market variable, relationship, or correction for the Kolmo graph.
 title: "[graph] "
 labels: ["market-graph", "contribution"]
 body:
   - type: markdown
     attributes:
       value: |
-        Use this form even if you are not comfortable editing code. A maintainer can turn the idea into YAML.
-  - type: input
-    id: variable
+        Use this form even if you are not comfortable editing code. Describe the market knowledge in plain English and a maintainer can turn it into graph YAML.
+  - type: dropdown
+    id: suggestion_type
     attributes:
-      label: Market variable or relationship
-      description: 'Example: "Cold weather increases diesel crack" or "Add ARA gasoil stocks".'
+      label: What are you suggesting?
+      options:
+        - Add a new market variable
+        - Add a relationship between variables
+        - Correct existing graph knowledge
+        - Unsure
+    validations:
+      required: true
+  - type: input
+    id: summary
+    attributes:
+      label: One-sentence summary
+      description: 'Examples: "Add ARA gasoil stocks" or "Higher Cushing stocks pressure WTI".'
       placeholder: "Higher Cushing stocks pressure WTI"
     validations:
       required: true
+  - type: input
+    id: source
+    attributes:
+      label: Source variable
+      description: For relationships, what is the driver?
+      placeholder: "Cushing stocks"
+  - type: input
+    id: target
+    attributes:
+      label: Target variable
+      description: For relationships, what is affected?
+      placeholder: "WTI"
   - type: dropdown
     id: cluster
     attributes:
-      label: Best cluster
+      label: Best cluster for a new variable
       options:
         - crude
         - product
@@ -33,7 +56,7 @@ body:
     id: direction
     attributes:
       label: Direction of influence
-      description: If A rises, what usually happens to B?
+      description: For relationships, if the source rises, what usually happens to the target?
       options:
         - same direction
         - opposite direction
@@ -52,9 +75,15 @@ body:
     validations:
       required: true
   - type: textarea
+    id: definition
+    attributes:
+      label: Variable definition
+      description: For new variables, explain what this market variable means.
+      placeholder: "ARA gasoil stocks are visible Northwest European distillate inventories."
+  - type: textarea
     id: reasoning
     attributes:
-      label: Reasoning
+      label: Market reasoning
       description: Explain the market logic in plain English. Links or examples help, but are not required.
       placeholder: "When stocks build at Cushing, local WTI availability rises and the benchmark often weakens versus Brent."
     validations:

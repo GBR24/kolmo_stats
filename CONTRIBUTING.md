@@ -5,9 +5,19 @@ kolmo is an open-source energy market analytics library. All contributions are w
 ## Four levels of contribution
 
 ### Level 1 — Add market knowledge
-No coding required. Open the **Suggest market graph knowledge** issue form to:
-- Suggest a new energy spread, formula, or convention
-- Report an incorrect formula or wrong sign
+No coding required. You can explore the graph locally first:
+
+```bash
+pip install -e .
+python examples/08_market_graph_viewer.py
+```
+
+Then open `http://127.0.0.1:8000`.
+
+Open the **Suggest market graph knowledge** issue form to:
+- Suggest a new market variable
+- Suggest a relationship between two variables
+- Report an incorrect formula, wrong sign, missing alias, or unclear rationale
 - Propose a new use case or example
 
 Graph data is stored in simple YAML at
@@ -20,7 +30,7 @@ Implement a new analytical function in one of the existing modules.
 Good first targets:
 - `src/kolmo_stats/spreads/` — new spread types and oil/gas differentials
 - `src/kolmo_stats/curves/` — new curve analytics and carry measures
-- `src/kolmo_stats/economics/` — IRR, payback period, sensitivity analysis
+- `src/kolmo_stats/economics/` — new project economics formulas such as IRR or payback period
 - `src/kolmo_stats/stats/` — new statistical measures and regimes
 
 **Guidelines for a new function:**
