@@ -4,6 +4,8 @@ Kolmo is the ultimate intelligence and analysis toolkit for Oil & Gas trading.
 
 Building the world's largest open-source intelligence graph for energy markets.
 
+[![Join Discord](https://img.shields.io/badge/Discord-Join%20the%20community-5865F2?logo=discord&logoColor=white)](https://discord.gg/JNCFeKnbC)
+
 ---
 
 ## What is kolmo?
