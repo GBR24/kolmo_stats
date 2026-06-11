@@ -18,8 +18,9 @@ pip install -e .
 python examples/08_market_graph_viewer.py
 ```
 
-Then open `http://127.0.0.1:8000`. The viewer shows current nodes,
-relationships, clusters, search, node details, edge rationale, and graph health.
+Open the local URL printed in your terminal, usually
+`http://127.0.0.1:8000`. The viewer shows current nodes, relationships,
+clusters, search, node details, edge rationale, and graph health.
 
 ## If You Do Not Want To Use Git
 

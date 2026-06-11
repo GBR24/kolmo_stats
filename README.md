@@ -60,9 +60,11 @@ pip install -e .
 python examples/08_market_graph_viewer.py
 ```
 
-Then open `http://127.0.0.1:8000`.
+The script prints a local URL to open in your browser. By default, that is
+usually `http://127.0.0.1:8000`.
 
-If port `8000` is already busy, run:
+If nothing opens, paste the printed URL into your browser. If port `8000` is
+already busy, choose another port, for example:
 
 ```bash
 python examples/08_market_graph_viewer.py --port 8001

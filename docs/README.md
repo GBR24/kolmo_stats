@@ -39,5 +39,6 @@ pip install -e .
 python examples/08_market_graph_viewer.py
 ```
 
-Open `http://127.0.0.1:8000` to browse the packaged graph before suggesting
-market knowledge or editing `src/kolmo_stats/graph/market_graph.yml`.
+Open the local URL printed in your terminal, usually
+`http://127.0.0.1:8000`, to browse the packaged graph before suggesting market
+knowledge or editing `src/kolmo_stats/graph/market_graph.yml`.

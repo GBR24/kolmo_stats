@@ -12,7 +12,8 @@ pip install -e .
 python examples/08_market_graph_viewer.py
 ```
 
-Then open `http://127.0.0.1:8000`.
+Open the local URL printed in your terminal, usually
+`http://127.0.0.1:8000`.
 
 Open the **Suggest market graph knowledge** issue form to:
 - Suggest a new market variable

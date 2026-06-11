@@ -5,7 +5,7 @@ Run:
     python examples/08_market_graph_viewer.py
 
 Then open:
-    http://127.0.0.1:8000
+    the URL printed in your terminal, usually http://127.0.0.1:8000
 """
 from __future__ import annotations
 
