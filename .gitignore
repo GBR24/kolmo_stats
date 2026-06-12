@@ -5,5 +5,3 @@ dist/
 build/
 .eggs/
 tempCodeRunnerFile.py
-*.so
-*.pyd
