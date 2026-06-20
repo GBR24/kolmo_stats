@@ -1,4 +1,4 @@
-version: "2026.05.26"
+version: "2026.06.11"
 
 clusters:
   crude: {label: "Crude", color: "#ffb000"}
@@ -68,7 +68,375 @@ nodes:
   cold_winter: {label: "Cold Winter", cluster: energy, tier: 3, value: 0.0, unit: "pressure [-1,1]", aliases: ["cold weather", "winter"], description: "Weather-driven heating demand pressure affecting distillates and broad demand.", related_formulas: [seasonal_zscore], strategy_hint: "Use for seasonal heating oil and diesel crack analysis."}
   renewables: {label: "Renewables", cluster: energy, tier: 3, value: 0.0, unit: "pressure [-1,1]", aliases: ["energy transition", "EV adoption"], description: "Renewable and electrification pressure that can displace oil demand over time.", related_formulas: [rolling_correlation], strategy_hint: "Use as a long-horizon demand displacement node."}
 
+  wti_midland: {label: "WTI Midland", cluster: crude, tier: 3, value: 0.0, unit: "USD/bbl", aliases: ["Midland WTI", "Permian WTI"], description: "Permian-quality WTI stream that links inland US production to Gulf Coast export economics.", related_formulas: [location_spread, brent_wti_spread], strategy_hint: "Use for Permian basis, export parity, and US crude quality comparisons."}
+  mars: {label: "Mars", cluster: crude, tier: 3, value: 0.0, unit: "USD/bbl", aliases: ["Mars crude", "Mars Sour"], description: "US Gulf medium sour crude grade exposed to offshore production, sour crude demand, and refinery complexity.", related_formulas: [quality_spread, location_spread], strategy_hint: "Use for medium-sour relative value and Gulf Coast refinery feedstock themes."}
+  forties: {label: "Forties", cluster: crude, tier: 3, value: 0.0, unit: "USD/bbl", aliases: ["Forties crude", "BFOET Forties"], description: "North Sea crude grade in the Brent complex that contributes to physical Dated Brent formation.", related_formulas: [quality_spread, location_spread], strategy_hint: "Use when decomposing Dated Brent into physical grade contributions."}
+  ekofisk: {label: "Ekofisk", cluster: crude, tier: 3, value: 0.0, unit: "USD/bbl", aliases: ["Ekofisk crude", "BFOET Ekofisk"], description: "North Sea light sweet crude grade included in the Brent physical benchmark basket.", related_formulas: [quality_spread, location_spread], strategy_hint: "Use for North Sea grade tightness and Dated Brent quality analysis."}
+  oseberg: {label: "Oseberg", cluster: crude, tier: 3, value: 0.0, unit: "USD/bbl", aliases: ["Oseberg crude", "BFOET Oseberg"], description: "North Sea crude grade linked to the Brent basket and Atlantic Basin light sweet crude pricing.", related_formulas: [quality_spread, location_spread], strategy_hint: "Use alongside other BFOET grades for physical Brent analysis."}
+  troll: {label: "Troll", cluster: crude, tier: 3, value: 0.0, unit: "USD/bbl", aliases: ["Troll crude", "BFOET Troll"], description: "North Sea crude grade that helps anchor Dated Brent physical market assessments.", related_formulas: [quality_spread, location_spread], strategy_hint: "Use for Brent basket and North Sea loading sensitivity."}
+  murban: {label: "Murban", cluster: crude, tier: 3, value: 0.0, unit: "USD/bbl", aliases: ["Murban crude", "Abu Dhabi Murban"], description: "Light sour Abu Dhabi crude benchmark important for Asian refinery economics and Dubai/Oman relative value.", related_formulas: [quality_spread, location_spread], strategy_hint: "Use for East-of-Suez light sour crude signals."}
+  espo: {label: "ESPO", cluster: crude, tier: 3, value: 0.0, unit: "USD/bbl", aliases: ["ESPO crude", "Eastern Siberia Pacific Ocean"], description: "Russian Far East crude stream tied to Asian demand, sanctions logistics, and Dubai/Oman relative value.", related_formulas: [quality_spread, location_spread], strategy_hint: "Use for Asia-facing Russian crude flow and sanctions analysis."}
+  basrah: {label: "Basrah", cluster: crude, tier: 3, value: 0.0, unit: "USD/bbl", aliases: ["Basrah crude", "Iraq Basrah"], description: "Iraqi export crude grade that links Middle East supply, Gulf risk, and sour crude benchmarks.", related_formulas: [quality_spread, location_spread], strategy_hint: "Use for Iraqi supply and Middle East sour crude availability."}
+  bonny_light: {label: "Bonny Light", cluster: crude, tier: 3, value: 0.0, unit: "USD/bbl", aliases: ["Bonny", "Nigerian crude"], description: "Nigerian light sweet crude grade exposed to Atlantic Basin demand and local disruption risk.", related_formulas: [quality_spread, location_spread], strategy_hint: "Use for light sweet Atlantic Basin crude and outage themes."}
+  maya: {label: "Maya", cluster: crude, tier: 3, value: 0.0, unit: "USD/bbl", aliases: ["Maya crude", "Mexican Maya"], description: "Mexican heavy sour crude grade important for complex refinery feedstock economics.", related_formulas: [quality_spread, location_spread], strategy_hint: "Use for heavy sour crude availability and coking refinery margins."}
+  medium_sour_crude: {label: "Medium Sour Crude", cluster: crude, tier: 3, value: 0.0, unit: "pressure [-1,1]", aliases: ["medium sour", "sour crude"], description: "Quality bucket for medium-density sour crude grades used by complex refineries.", related_formulas: [quality_spread], strategy_hint: "Use to group Mars, Basrah, Dubai/Oman, and similar sour crude economics."}
+  light_sweet_crude: {label: "Light Sweet Crude", cluster: crude, tier: 3, value: 0.0, unit: "pressure [-1,1]", aliases: ["light sweet", "sweet crude"], description: "Quality bucket for lighter low-sulfur crude grades tied to Brent, WTI, and Atlantic Basin pricing.", related_formulas: [quality_spread], strategy_hint: "Use for clean-yielding crude demand and Brent/WTI quality comparisons."}
+  heavy_sour_crude: {label: "Heavy Sour Crude", cluster: crude, tier: 3, value: 0.0, unit: "pressure [-1,1]", aliases: ["heavy sour", "heavy crude"], description: "Quality bucket for dense high-sulfur crude grades that require complex refining capacity.", related_formulas: [quality_spread], strategy_hint: "Use for coker demand, heavy crude discounts, and refinery complexity strategies."}
+  crude_quality_spread: {label: "Crude Quality Spread", cluster: crude, tier: 2, value: 0.0, unit: "USD/bbl", aliases: ["quality spread", "light-heavy spread", "sweet-sour spread"], description: "Relative value between crude grades caused by sulfur, density, yield, freight, and refinery capability.", related_formulas: [quality_spread, location_spread], strategy_hint: "Use to connect grade fundamentals to benchmark and refinery margin trades."}
+
+  gasoil: {label: "Gasoil", cluster: product, tier: 3, value: 0.0, unit: "USD/mt", aliases: ["ICE gasoil", "diesel gasoil"], description: "Middle-distillate product marker linked to diesel cracks, European demand, and global distillate tightness.", related_formulas: [crack_spread, location_spread], strategy_hint: "Use for European and global distillate relative value."}
+  vlsfo: {label: "VLSFO", cluster: product, tier: 3, value: 0.0, unit: "USD/mt", aliases: ["very low sulfur fuel oil", "VLSFO bunker"], description: "Low-sulfur marine fuel product driven by shipping demand, desulfurization capacity, and fuel oil cracks.", related_formulas: [crack_spread, quality_spread], strategy_hint: "Use for marine fuel sulfur spreads and bunker demand."}
+  hsfo: {label: "HSFO", cluster: product, tier: 3, value: 0.0, unit: "USD/mt", aliases: ["high sulfur fuel oil", "HSFO bunker"], description: "High-sulfur residual fuel oil tied to complex refinery economics and scrubber-enabled marine demand.", related_formulas: [crack_spread, quality_spread], strategy_hint: "Use for residue upgrading, sour crude, and bunker fuel strategies."}
+  fuel_oil_crack: {label: "Fuel Oil Crack", cluster: product, tier: 2, value: 0.0, unit: "USD/bbl", aliases: ["FO crack", "fuel oil margin"], description: "Fuel oil refining margin proxy driven by bunker demand, residue supply, and upgrading capacity.", related_formulas: [crack_spread, rolling_zscore], strategy_hint: "Use for heavy-sour crude, coking margin, and marine fuel themes."}
+  lpg: {label: "LPG", cluster: product, tier: 3, value: 0.0, unit: "USD/mt", aliases: ["liquefied petroleum gas"], description: "Light-end product bucket including propane and butane, tied to petrochemical demand and seasonal heating.", related_formulas: [location_spread, seasonal_zscore], strategy_hint: "Use for light-end substitution and petrochemical feedstock signals."}
+  propane: {label: "Propane", cluster: product, tier: 3, value: 0.0, unit: "USD/gal", aliases: ["C3", "propane LPG"], description: "Propane price pressure linked to LPG exports, petrochemical demand, and winter heating demand.", related_formulas: [seasonal_zscore, location_spread], strategy_hint: "Use for LPG export and seasonal heating strategies."}
+  butane: {label: "Butane", cluster: product, tier: 3, value: 0.0, unit: "USD/gal", aliases: ["C4", "butane LPG"], description: "Butane price pressure linked to blending, petrochemicals, and light-end supply.", related_formulas: [seasonal_zscore, location_spread], strategy_hint: "Use for gasoline blending and LPG relative value."}
+  naphtha_flat: {label: "Naphtha Flat Price", cluster: product, tier: 3, value: 0.0, unit: "USD/mt", aliases: ["naphtha price", "physical naphtha"], description: "Flat naphtha price level separated from the naphtha crack or margin.", related_formulas: [crack_spread, location_spread], strategy_hint: "Use when distinguishing petrochemical feedstock price from crack margin."}
+  ethanol: {label: "Ethanol", cluster: product, tier: 3, value: 0.0, unit: "USD/gal", aliases: ["fuel ethanol", "bioethanol"], description: "Biofuel blendstock linked to gasoline blending economics and road fuel demand.", related_formulas: [seasonal_zscore, rolling_correlation], strategy_hint: "Use for gasoline blend economics and renewable fuel displacement."}
+  biodiesel: {label: "Biodiesel", cluster: product, tier: 3, value: 0.0, unit: "USD/gal", aliases: ["renewable diesel", "bio diesel"], description: "Bio-based diesel substitute tied to policy, feedstock economics, and road diesel demand.", related_formulas: [seasonal_zscore, rolling_correlation], strategy_hint: "Use for diesel substitution and low-carbon fuel policy themes."}
+  saf: {label: "SAF", cluster: product, tier: 3, value: 0.0, unit: "USD/gal", aliases: ["sustainable aviation fuel"], description: "Sustainable aviation fuel demand and price pressure linked to airline capacity and jet fuel substitution.", related_formulas: [seasonal_zscore, rolling_correlation], strategy_hint: "Use for aviation fuel transition and jet demand displacement."}
+  marine_fuel_demand: {label: "Marine Fuel Demand", cluster: product, tier: 2, value: 0.0, unit: "pressure [-1,1]", aliases: ["bunker demand", "shipping fuel demand"], description: "Bunker fuel demand pressure from global shipping activity and voyage distance.", related_formulas: [seasonal_zscore, rolling_correlation], strategy_hint: "Use for VLSFO, HSFO, and shipping-linked product demand."}
+  road_fuel_demand: {label: "Road Fuel Demand", cluster: product, tier: 2, value: 0.0, unit: "pressure [-1,1]", aliases: ["driving demand", "road demand"], description: "Road transport fuel demand pressure affecting gasoline, diesel, and biofuel blending.", related_formulas: [seasonal_zscore, rolling_correlation], strategy_hint: "Use for gasoline seasonality and diesel road freight confirmation."}
+  heating_oil_demand: {label: "Heating Oil Demand", cluster: product, tier: 2, value: 0.0, unit: "pressure [-1,1]", aliases: ["heating demand", "winter distillate demand"], description: "Space-heating fuel demand pressure that supports distillate prices and diesel cracks.", related_formulas: [seasonal_zscore], strategy_hint: "Use for winter distillate tightness and weather risk."}
+  petrochemical_demand: {label: "Petrochemical Demand", cluster: product, tier: 2, value: 0.0, unit: "pressure [-1,1]", aliases: ["petchem demand", "chemical feedstock demand"], description: "Petrochemical feedstock demand pressure for naphtha, LPG, and light products.", related_formulas: [rolling_correlation, lead_lag_correlation], strategy_hint: "Use for naphtha, LPG, and China industrial demand themes."}
+
+  refining_margins: {label: "Refining Margins", cluster: balance, tier: 1, value: 0.0, unit: "USD/bbl", aliases: ["refinery margins", "gross margins"], description: "Aggregate refinery margin pressure across gasoline, diesel, jet, naphtha, and fuel oil cracks.", related_formulas: [crack_spread, rolling_zscore], strategy_hint: "Use as the broad refinery incentive node before looking at individual product cracks."}
+  refinery_capacity: {label: "Refinery Capacity", cluster: balance, tier: 2, value: 0.0, unit: "pressure [-1,1]", aliases: ["refining capacity", "nameplate capacity"], description: "Available refining capacity that determines how much crude can be converted into products.", related_formulas: [crack_spread, scenario_pnl], strategy_hint: "Use for structural throughput limits and regional product supply risk."}
+  refinery_maintenance: {label: "Refinery Maintenance", cluster: balance, tier: 2, value: 0.0, unit: "pressure [-1,1]", aliases: ["turnaround season", "planned maintenance"], description: "Planned refinery downtime that reduces crude runs and can tighten product markets.", related_formulas: [seasonal_zscore], strategy_hint: "Use for seasonal turnaround and crack-spread setups."}
+  refinery_complexity: {label: "Refinery Complexity", cluster: balance, tier: 3, value: 0.0, unit: "index", aliases: ["Nelson complexity", "complex refinery"], description: "Refinery capability to process heavy or sour crude and upgrade low-value residual streams.", related_formulas: [quality_spread], strategy_hint: "Use for heavy-sour crude and fuel oil relative value."}
+  cdu_capacity: {label: "CDU Capacity", cluster: balance, tier: 3, value: 0.0, unit: "pressure [-1,1]", aliases: ["crude distillation capacity", "CDU"], description: "Primary crude distillation capacity that gates refinery crude runs.", related_formulas: [crack_spread, scenario_pnl], strategy_hint: "Use as the physical ceiling for crude throughput."}
+  fcc_margins: {label: "FCC Margins", cluster: balance, tier: 3, value: 0.0, unit: "USD/bbl", aliases: ["fluid catalytic cracker margin", "FCC economics"], description: "Conversion margin for gasoline-oriented refinery units that links feedstocks to gasoline cracks.", related_formulas: [crack_spread, quality_spread], strategy_hint: "Use for gasoline-yielding refinery economics."}
+  hydrocracker_margins: {label: "Hydrocracker Margins", cluster: balance, tier: 3, value: 0.0, unit: "USD/bbl", aliases: ["hydrocracker economics", "HCU margins"], description: "Conversion margin for distillate-oriented refinery units tied to diesel and jet cracks.", related_formulas: [crack_spread, quality_spread], strategy_hint: "Use for middle-distillate refinery economics."}
+  desulfurization_capacity: {label: "Desulfurization Capacity", cluster: balance, tier: 3, value: 0.0, unit: "pressure [-1,1]", aliases: ["hydrotreating capacity", "desulfurization"], description: "Capacity to remove sulfur from products and crude streams, supporting low-sulfur fuel supply.", related_formulas: [quality_spread], strategy_hint: "Use for VLSFO, ULSD, and sweet-sour quality spread analysis."}
+  product_yields: {label: "Product Yields", cluster: balance, tier: 3, value: 0.0, unit: "share", aliases: ["refinery yields", "yield slate"], description: "Refinery output mix across gasoline, distillate, jet, naphtha, and fuel oil.", related_formulas: [crack_spread], strategy_hint: "Use when translating crude quality and refinery configuration into product supply."}
+  crude_runs: {label: "Crude Runs", cluster: balance, tier: 1, value: 0.0, unit: "pressure [-1,1]", aliases: ["crude throughput", "refinery crude intake"], description: "Crude intake into refineries, linking refining economics to crude demand.", related_formulas: [seasonal_zscore, crack_spread], strategy_hint: "Use as the physical bridge between product margins and crude demand."}
+
+  us_crude_stocks: {label: "US Crude Stocks", cluster: balance, tier: 2, value: 0.0, unit: "pressure [-1,1]", aliases: ["US crude inventories", "EIA crude stocks"], description: "US commercial crude inventory pressure that affects WTI, Cushing, and export parity.", related_formulas: [seasonal_zscore, calendar_spread], strategy_hint: "Use for US crude balance and WTI spread analysis."}
+  us_product_stocks: {label: "US Product Stocks", cluster: balance, tier: 2, value: 0.0, unit: "pressure [-1,1]", aliases: ["US product inventories", "EIA product stocks"], description: "Aggregate US refined product inventory pressure across gasoline, distillate, jet, and fuel oil.", related_formulas: [seasonal_zscore, crack_spread], strategy_hint: "Use for broad US product crack risk."}
+  ara_stocks: {label: "ARA Stocks", cluster: balance, tier: 3, value: 0.0, unit: "pressure [-1,1]", aliases: ["Amsterdam Rotterdam Antwerp stocks", "ARA inventories"], description: "Northwest Europe hub inventory pressure for refined products and distillates.", related_formulas: [seasonal_zscore, location_spread], strategy_hint: "Use for European product tightness and gasoil cracks."}
+  singapore_stocks: {label: "Singapore Stocks", cluster: balance, tier: 3, value: 0.0, unit: "pressure [-1,1]", aliases: ["Singapore inventories", "Singapore oil stocks"], description: "Asian oil product inventory pressure visible through Singapore storage hubs.", related_formulas: [seasonal_zscore, location_spread], strategy_hint: "Use for Asian product balances and fuel oil cracks."}
+  china_crude_imports: {label: "China Crude Imports", cluster: balance, tier: 2, value: 0.0, unit: "pressure [-1,1]", aliases: ["China imports", "Chinese crude imports"], description: "China crude import pressure that links domestic demand and stock-building to seaborne benchmarks.", related_formulas: [seasonal_zscore, rolling_correlation], strategy_hint: "Use for China demand confirmation and Dubai/Oman strength."}
+  india_crude_imports: {label: "India Crude Imports", cluster: balance, tier: 2, value: 0.0, unit: "pressure [-1,1]", aliases: ["India imports", "Indian crude imports"], description: "India crude import pressure that supports seaborne crude demand and sour crude flows.", related_formulas: [seasonal_zscore, rolling_correlation], strategy_hint: "Use for Asian demand and Russian crude flow analysis."}
+  strategic_petroleum_reserve: {label: "Strategic Petroleum Reserve", cluster: balance, tier: 2, value: 0.0, unit: "pressure [-1,1]", aliases: ["SPR", "strategic reserves"], description: "Government-controlled crude stocks whose releases or refills can alter prompt crude balances.", related_formulas: [scenario_pnl, seasonal_zscore], strategy_hint: "Use for policy-driven crude supply or demand shocks."}
+  crude_exports: {label: "Crude Exports", cluster: balance, tier: 2, value: 0.0, unit: "pressure [-1,1]", aliases: ["crude export flows", "seaborne crude exports"], description: "Crude export flow pressure that links domestic production to global seaborne supply.", related_formulas: [location_spread, shipping_adjusted_spread], strategy_hint: "Use for export parity and global supply availability."}
+  product_exports: {label: "Product Exports", cluster: balance, tier: 2, value: 0.0, unit: "pressure [-1,1]", aliases: ["refined product exports", "product export flows"], description: "Refined product export pressure affecting regional stocks and global product availability.", related_formulas: [location_spread, shipping_adjusted_spread], strategy_hint: "Use for diesel, gasoline, and fuel oil regional tightness."}
+  import_demand: {label: "Import Demand", cluster: balance, tier: 2, value: 0.0, unit: "pressure [-1,1]", aliases: ["seaborne import demand", "import pull"], description: "Import pull from consuming regions that supports seaborne crude and product prices.", related_formulas: [location_spread, rolling_correlation], strategy_hint: "Use to connect regional demand to benchmark and freight strength."}
+  storage_capacity: {label: "Storage Capacity", cluster: balance, tier: 3, value: 0.0, unit: "pressure [-1,1]", aliases: ["tank capacity", "available storage"], description: "Available storage capacity that shapes inventory stress, contango, and prompt spreads.", related_formulas: [annualized_carry, calendar_spread], strategy_hint: "Use for storage economics and spread dislocations."}
+  stock_draws: {label: "Stock Draws", cluster: balance, tier: 2, value: 0.0, unit: "pressure [-1,1]", aliases: ["inventory draws", "stock drawdowns"], description: "Inventory draw pressure indicating a tighter physical balance.", related_formulas: [seasonal_zscore, calendar_spread], strategy_hint: "Use as a concise tightness signal for crude and products."}
+
+  tanker_rates: {label: "Tanker Rates", cluster: balance, tier: 2, value: 0.0, unit: "pressure [-1,1]", aliases: ["freight rates", "tanker freight"], description: "Broad tanker freight cost pressure that affects delivered crude and product economics.", related_formulas: [shipping_adjusted_spread], strategy_hint: "Use for freight-adjusted arbitrage and delivered margin analysis."}
+  vlcc_rates: {label: "VLCC Rates", cluster: balance, tier: 3, value: 0.0, unit: "pressure [-1,1]", aliases: ["VLCC freight", "very large crude carrier rates"], description: "Long-haul crude tanker rate pressure for major Middle East and Atlantic Basin crude routes.", related_formulas: [shipping_adjusted_spread], strategy_hint: "Use for long-haul crude arbitrage and Dubai/Brent flow economics."}
+  suezmax_rates: {label: "Suezmax Rates", cluster: balance, tier: 3, value: 0.0, unit: "pressure [-1,1]", aliases: ["Suezmax freight"], description: "Mid-size crude tanker rate pressure sensitive to Atlantic Basin and Black Sea crude flows.", related_formulas: [shipping_adjusted_spread], strategy_hint: "Use for regional crude freight and disruption analysis."}
+  aframax_rates: {label: "Aframax Rates", cluster: balance, tier: 3, value: 0.0, unit: "pressure [-1,1]", aliases: ["Aframax freight"], description: "Short-haul crude tanker rate pressure linked to regional crude trades and port disruption.", related_formulas: [shipping_adjusted_spread], strategy_hint: "Use for regional crude logistics and basis trades."}
+  clean_tanker_rates: {label: "Clean Tanker Rates", cluster: balance, tier: 3, value: 0.0, unit: "pressure [-1,1]", aliases: ["clean freight", "product tanker rates"], description: "Refined product tanker rate pressure affecting gasoline, diesel, jet, and naphtha arbitrage.", related_formulas: [shipping_adjusted_spread], strategy_hint: "Use for product export economics and regional cracks."}
+  dirty_tanker_rates: {label: "Dirty Tanker Rates", cluster: balance, tier: 3, value: 0.0, unit: "pressure [-1,1]", aliases: ["dirty freight", "crude tanker rates"], description: "Crude and fuel oil tanker rate pressure affecting heavy products and crude arbitrage.", related_formulas: [shipping_adjusted_spread], strategy_hint: "Use for crude export parity and fuel oil flows."}
+  port_congestion: {label: "Port Congestion", cluster: balance, tier: 3, value: 0.0, unit: "pressure [-1,1]", aliases: ["terminal congestion", "port delays"], description: "Port and terminal delay pressure that lengthens freight time and reduces effective vessel availability.", related_formulas: [shipping_adjusted_spread], strategy_hint: "Use for logistics disruption and regional tightness."}
+  shipping_insurance: {label: "Shipping Insurance", cluster: balance, tier: 3, value: 0.0, unit: "pressure [-1,1]", aliases: ["war risk insurance", "marine insurance"], description: "Insurance cost pressure for shipping through risky routes or sanctioned trades.", related_formulas: [shipping_adjusted_spread], strategy_hint: "Use for conflict-sensitive delivered-cost analysis."}
+  ais_flows: {label: "AIS Flows", cluster: balance, tier: 3, value: 0.0, unit: "pressure [-1,1]", aliases: ["vessel tracking", "AIS"], description: "Observed vessel movement signal used to infer crude and product flows before official data.", related_formulas: [seasonal_zscore, rolling_correlation], strategy_hint: "Use as a flow confirmation input for exports and disruptions."}
+  canal_disruption: {label: "Canal Disruption", cluster: balance, tier: 3, value: 0.0, unit: "pressure [-1,1]", aliases: ["Suez disruption", "Panama disruption", "canal risk"], description: "Canal transit disruption pressure that reroutes cargoes, extends voyages, and raises freight time.", related_formulas: [shipping_adjusted_spread, scenario_pnl], strategy_hint: "Use for route-risk scenarios and product tightness."}
+  freight_time: {label: "Freight Time", cluster: balance, tier: 3, value: 0.0, unit: "days", aliases: ["voyage time", "shipping time"], description: "Voyage duration pressure that delays supply arrival and ties up vessel capacity.", related_formulas: [shipping_adjusted_spread], strategy_hint: "Use for timing physical arbitrage and prompt product tightness."}
+  vessel_availability: {label: "Vessel Availability", cluster: balance, tier: 3, value: 0.0, unit: "pressure [-1,1]", aliases: ["available tankers", "tonnage availability"], description: "Available tanker supply that usually moves inversely to freight rates.", related_formulas: [shipping_adjusted_spread], strategy_hint: "Use for freight market balance and arbitrage costs."}
+  ballast_distance: {label: "Ballast Distance", cluster: balance, tier: 3, value: 0.0, unit: "nm", aliases: ["ballast miles", "empty sailing distance"], description: "Distance ships must sail empty before loading, increasing effective freight cost and vessel scarcity.", related_formulas: [shipping_adjusted_spread], strategy_hint: "Use for route economics and tanker rate pressure."}
+
+  jkm_lng: {label: "JKM LNG", cluster: energy, tier: 2, value: 0.0, unit: "USD/MMBtu", aliases: ["JKM", "Japan Korea Marker"], description: "Asian spot LNG price marker driven by Asian demand, supply disruptions, and LNG freight.", related_formulas: [ttf_jkm_spread, lng_netback, rolling_correlation], strategy_hint: "Use for Asia-Europe LNG competition and gas-to-oil switching risk."}
+  nbp_gas: {label: "NBP Gas", cluster: energy, tier: 3, value: 0.0, unit: "p/th", aliases: ["NBP", "UK gas"], description: "UK natural gas price marker linked to Northwest Europe gas balances and TTF.", related_formulas: [rolling_correlation, location_spread], strategy_hint: "Use for UK-Europe gas basis and regional switching signals."}
+  lng_exports: {label: "LNG Exports", cluster: energy, tier: 2, value: 0.0, unit: "pressure [-1,1]", aliases: ["LNG export volumes"], description: "LNG export flow pressure that connects feedgas, shipping, and destination gas prices.", related_formulas: [lng_netback, shipping_adjusted_spread], strategy_hint: "Use for US gas demand and global LNG supply availability."}
+  us_lng_feedgas: {label: "US LNG Feedgas", cluster: energy, tier: 2, value: 0.0, unit: "pressure [-1,1]", aliases: ["feedgas", "LNG feedgas"], description: "US natural gas consumed by LNG export plants, linking Henry Hub to global LNG economics.", related_formulas: [lng_netback, henry_hub_ttf_arb], strategy_hint: "Use as the bridge between Henry Hub, LNG exports, and global gas prices."}
+  lng_freight: {label: "LNG Freight", cluster: energy, tier: 3, value: 0.0, unit: "USD/MMBtu", aliases: ["LNG shipping", "LNG carrier rates"], description: "LNG shipping cost pressure that affects netbacks and regional arbitrage.", related_formulas: [lng_netback, shipping_adjusted_spread], strategy_hint: "Use for LNG arbitrage and delivered-gas economics."}
+  lng_netback: {label: "LNG Netback", cluster: energy, tier: 2, value: 0.0, unit: "USD/MMBtu", aliases: ["gas netback", "LNG arbitrage"], description: "Export netback after destination price, source gas, and freight costs.", related_formulas: [lng_netback, henry_hub_ttf_arb, ttf_jkm_spread], strategy_hint: "Use to decide whether LNG export economics support feedgas and flows."}
+  europe_gas_storage: {label: "Europe Gas Storage", cluster: energy, tier: 2, value: 0.0, unit: "pressure [-1,1]", aliases: ["EU gas storage", "European gas stocks"], description: "European gas inventory pressure that usually moves inversely to TTF and LNG import demand.", related_formulas: [seasonal_zscore, calendar_spread], strategy_hint: "Use for TTF tightness and winter gas-to-oil switching risk."}
+  norway_gas_flows: {label: "Norway Gas Flows", cluster: energy, tier: 3, value: 0.0, unit: "pressure [-1,1]", aliases: ["Norwegian gas", "Norway pipeline flows"], description: "Norwegian pipeline gas supply pressure into Europe, affecting TTF and NBP.", related_formulas: [seasonal_zscore, rolling_correlation], strategy_hint: "Use for European gas supply disruption and TTF scenarios."}
+  russian_pipeline_gas: {label: "Russian Pipeline Gas", cluster: energy, tier: 3, value: 0.0, unit: "pressure [-1,1]", aliases: ["Russian gas flows", "pipeline gas"], description: "Russian pipeline gas flow pressure into Europe, affected by war, sanctions, and policy.", related_formulas: [scenario_pnl, rolling_correlation], strategy_hint: "Use for Europe gas risk and cross-energy switching scenarios."}
+  lng_regas_capacity: {label: "LNG Regas Capacity", cluster: energy, tier: 3, value: 0.0, unit: "pressure [-1,1]", aliases: ["regas capacity", "LNG import capacity"], description: "Capacity to receive LNG cargoes and convert them back to pipeline gas.", related_formulas: [lng_netback, ttf_jkm_spread], strategy_hint: "Use for regional bottlenecks in LNG import response."}
+  asian_lng_demand: {label: "Asian LNG Demand", cluster: energy, tier: 2, value: 0.0, unit: "pressure [-1,1]", aliases: ["Asia LNG demand", "Asian gas demand"], description: "Asian LNG demand pressure from weather, industry, and substitution economics.", related_formulas: [seasonal_zscore, rolling_correlation], strategy_hint: "Use for JKM strength and Europe-Asia LNG competition."}
+  lng_supply_disruption: {label: "LNG Supply Disruption", cluster: energy, tier: 2, value: 0.0, unit: "pressure [-1,1]", aliases: ["LNG outage", "LNG supply risk"], description: "Disruption pressure at LNG liquefaction, shipping, or export infrastructure.", related_formulas: [scenario_pnl, stress_matrix], strategy_hint: "Use for gas price spikes and switching into oil products."}
+  gas_to_oil_switching: {label: "Gas To Oil Switching", cluster: energy, tier: 2, value: 0.0, unit: "pressure [-1,1]", aliases: ["gas-oil switching", "fuel switching"], description: "Oil demand pressure created when high gas prices encourage substitution into liquid fuels.", related_formulas: [rolling_correlation, scenario_pnl], strategy_hint: "Use to connect gas shocks to distillates, fuel oil, and crude demand."}
+
+  industrial_production: {label: "Industrial Production", cluster: macro, tier: 2, value: 0.0, unit: "pressure [-1,1]", aliases: ["IP", "industrial output"], description: "Real-economy production activity that drives diesel, petrochemical, and broad oil demand.", related_formulas: [rolling_correlation, lead_lag_correlation], strategy_hint: "Use as a cleaner demand input than financial positioning."}
+  china_credit_impulse: {label: "China Credit Impulse", cluster: macro, tier: 2, value: 0.0, unit: "pressure [-1,1]", aliases: ["China credit", "credit impulse"], description: "Chinese credit growth impulse that can lead construction, industry, and commodity demand.", related_formulas: [lead_lag_correlation, rolling_correlation], strategy_hint: "Use as an early China demand and petrochemical signal."}
+  construction_activity: {label: "Construction Activity", cluster: macro, tier: 3, value: 0.0, unit: "pressure [-1,1]", aliases: ["construction", "building activity"], description: "Construction-sector activity that supports diesel, bitumen, and industrial fuel demand.", related_formulas: [rolling_correlation], strategy_hint: "Use for diesel and China-linked real-economy demand."}
+  petrochemical_margins: {label: "Petrochemical Margins", cluster: macro, tier: 3, value: 0.0, unit: "USD/mt", aliases: ["petchem margins", "chemical margins"], description: "Petrochemical profitability that drives demand for naphtha, LPG, and other feedstocks.", related_formulas: [rolling_zscore, rolling_correlation], strategy_hint: "Use as a lead signal for naphtha and LPG demand."}
+  trucking_miles: {label: "Trucking Miles", cluster: macro, tier: 3, value: 0.0, unit: "pressure [-1,1]", aliases: ["truck miles", "vehicle miles trucking"], description: "Road freight miles traveled, a direct real-economy signal for diesel demand.", related_formulas: [seasonal_zscore, rolling_correlation], strategy_hint: "Use to confirm diesel crack and ULSD demand strength."}
+  airline_capacity: {label: "Airline Capacity", cluster: macro, tier: 3, value: 0.0, unit: "pressure [-1,1]", aliases: ["seat capacity", "air capacity"], description: "Scheduled airline capacity that leads jet fuel burn and aviation fuel demand.", related_formulas: [seasonal_zscore, rolling_correlation], strategy_hint: "Use before passenger traffic data to anticipate jet demand."}
+  mobility_index: {label: "Mobility Index", cluster: macro, tier: 3, value: 0.0, unit: "index", aliases: ["mobility", "traffic mobility"], description: "High-frequency mobility signal for road fuel, retail gasoline, and travel demand.", related_formulas: [seasonal_zscore, rolling_correlation], strategy_hint: "Use for near-real-time demand nowcasting."}
+  retail_fuel_demand: {label: "Retail Fuel Demand", cluster: macro, tier: 3, value: 0.0, unit: "pressure [-1,1]", aliases: ["retail gasoline demand", "pump demand"], description: "Consumer fuel demand at retail stations, mainly tied to gasoline and road mobility.", related_formulas: [seasonal_zscore, rolling_correlation], strategy_hint: "Use for RBOB and gasoline crack confirmation."}
+  agricultural_diesel_demand: {label: "Agricultural Diesel Demand", cluster: macro, tier: 3, value: 0.0, unit: "pressure [-1,1]", aliases: ["farm diesel demand", "ag diesel"], description: "Seasonal diesel demand from farming, harvest, and agricultural logistics.", related_formulas: [seasonal_zscore], strategy_hint: "Use for regional diesel seasonality and distillate demand."}
+  mining_activity: {label: "Mining Activity", cluster: macro, tier: 3, value: 0.0, unit: "pressure [-1,1]", aliases: ["mining output", "extractive activity"], description: "Resource-sector activity that supports diesel consumption and heavy transport demand.", related_formulas: [rolling_correlation], strategy_hint: "Use for cyclical diesel demand and commodity-linked transport."}
+
+  hurricane_risk: {label: "Hurricane Risk", cluster: energy, tier: 2, value: 0.0, unit: "pressure [-1,1]", aliases: ["hurricane", "storm risk"], description: "Storm disruption risk for Gulf Coast production, refining, exports, and terminals.", related_formulas: [scenario_pnl, stress_matrix], strategy_hint: "Use for short-term refinery outage, crude supply, and product crack shocks."}
+  freeze_off_risk: {label: "Freeze-Off Risk", cluster: energy, tier: 2, value: 0.0, unit: "pressure [-1,1]", aliases: ["freeze-off", "well freeze"], description: "Cold-weather production loss risk, especially for US oil and gas supply.", related_formulas: [scenario_pnl, stress_matrix], strategy_hint: "Use for winter supply disruption and Henry Hub or WTI risk."}
+  heatwave_risk: {label: "Heatwave Risk", cluster: energy, tier: 3, value: 0.0, unit: "pressure [-1,1]", aliases: ["heatwave", "extreme heat"], description: "Extreme heat demand and infrastructure stress risk affecting cooling, transport, and fuel demand.", related_formulas: [seasonal_zscore, scenario_pnl], strategy_hint: "Use for summer demand, refinery stress, and gas-to-oil switching."}
+  middle_east_tension: {label: "Middle East Tension", cluster: geo, tier: 2, value: 0.0, unit: "pressure [-1,1]", aliases: ["Mideast tension", "Gulf tension"], description: "Regional geopolitical tension that raises supply and chokepoint risk around the Persian Gulf.", related_formulas: [scenario_pnl, stress_matrix], strategy_hint: "Use as the broad input before Hormuz, Basrah, and OPEC risk."}
+  black_sea_risk: {label: "Black Sea Risk", cluster: geo, tier: 2, value: 0.0, unit: "pressure [-1,1]", aliases: ["Black Sea disruption", "Black Sea"], description: "Black Sea shipping and conflict risk affecting Russian and regional crude flows.", related_formulas: [scenario_pnl, shipping_adjusted_spread], strategy_hint: "Use for Russian exports, Urals, and regional freight risk."}
+  ukraine_war: {label: "Ukraine War", cluster: geo, tier: 2, value: 0.0, unit: "pressure [-1,1]", aliases: ["Russia Ukraine war", "Ukraine conflict"], description: "Conflict pressure affecting Russian sanctions, Black Sea flows, and European energy security.", related_formulas: [scenario_pnl, stress_matrix], strategy_hint: "Use for Russia-linked crude, product, and gas scenarios."}
+  sanctions_enforcement: {label: "Sanctions Enforcement", cluster: geo, tier: 2, value: 0.0, unit: "pressure [-1,1]", aliases: ["sanctions compliance", "enforcement"], description: "Intensity of sanctions enforcement affecting Russian, Iranian, and shadow-fleet flows.", related_formulas: [scenario_pnl, stress_matrix], strategy_hint: "Use to distinguish written sanctions from realized flow impact."}
+  price_cap_policy: {label: "Price Cap Policy", cluster: geo, tier: 3, value: 0.0, unit: "pressure [-1,1]", aliases: ["oil price cap", "Russian price cap"], description: "Policy pressure from price-cap rules that can alter Russian crude discounts, shipping, and insurance.", related_formulas: [scenario_pnl, shipping_adjusted_spread], strategy_hint: "Use for Urals discounts and sanctioned freight economics."}
+  export_bans: {label: "Export Bans", cluster: geo, tier: 3, value: 0.0, unit: "pressure [-1,1]", aliases: ["product export ban", "crude export ban"], description: "Government restrictions on exports that can trap supply locally and tighten global markets.", related_formulas: [scenario_pnl], strategy_hint: "Use for regional dislocations and product crack spikes."}
+  labor_strikes: {label: "Labor Strikes", cluster: geo, tier: 3, value: 0.0, unit: "pressure [-1,1]", aliases: ["strikes", "labor disruption"], description: "Labor disruption risk at refineries, ports, pipelines, or energy infrastructure.", related_formulas: [scenario_pnl], strategy_hint: "Use for outage and logistics disruption scenarios."}
+  pipeline_disruption: {label: "Pipeline Disruption", cluster: geo, tier: 3, value: 0.0, unit: "pressure [-1,1]", aliases: ["pipeline outage", "pipeline risk"], description: "Pipeline outage pressure that can constrain crude, product, or gas flows.", related_formulas: [scenario_pnl, location_spread], strategy_hint: "Use for basis moves, regional supply disruption, and flow constraints."}
+  cyber_risk: {label: "Cyber Risk", cluster: geo, tier: 3, value: 0.0, unit: "pressure [-1,1]", aliases: ["cyberattack", "cyber disruption"], description: "Cyber disruption risk to pipelines, terminals, refineries, and trading infrastructure.", related_formulas: [scenario_pnl, stress_matrix], strategy_hint: "Use for operational disruption scenarios across logistics and refining."}
+
 edges:
+  - [wti, wti_midland, 0.88, 1, "WTI anchor", "WTI futures anchor Midland-grade US crude pricing."]
+  - [wti_midland, wti_houston, 0.80, 1, "Permian to coast", "Midland barrels flow toward Gulf Coast export parity."]
+  - [us_shale, wti_midland, 0.70, -1, "Permian supply", "More shale supply can pressure Midland crude differentials."]
+  - [wti_midland, light_sweet_crude, 0.65, 1, "quality bucket", "WTI Midland is a key US light sweet crude stream."]
+  - [forties, dated_brent, 0.78, 1, "BFOET grade", "Forties contributes to physical Dated Brent assessment."]
+  - [ekofisk, dated_brent, 0.76, 1, "BFOET grade", "Ekofisk contributes to physical Dated Brent assessment."]
+  - [oseberg, dated_brent, 0.76, 1, "BFOET grade", "Oseberg contributes to physical Dated Brent assessment."]
+  - [troll, dated_brent, 0.74, 1, "BFOET grade", "Troll contributes to physical Dated Brent assessment."]
+  - [dated_brent, forties, 0.68, 1, "Brent basket", "Dated Brent anchors North Sea physical grade pricing."]
+  - [dated_brent, ekofisk, 0.68, 1, "Brent basket", "Dated Brent anchors North Sea physical grade pricing."]
+  - [dated_brent, oseberg, 0.68, 1, "Brent basket", "Dated Brent anchors North Sea physical grade pricing."]
+  - [dated_brent, troll, 0.68, 1, "Brent basket", "Dated Brent anchors North Sea physical grade pricing."]
+  - [brent, bonny_light, 0.70, 1, "Atlantic light sweet", "Brent anchors many Atlantic Basin light sweet grades."]
+  - [bonny_light, light_sweet_crude, 0.65, 1, "quality bucket", "Bonny Light is a light sweet Atlantic Basin crude."]
+  - [brent, light_sweet_crude, 0.70, 1, "quality benchmark", "Brent strength reflects light sweet crude conditions."]
+  - [dubai_oman, murban, 0.72, 1, "East sour anchor", "Dubai/Oman anchors East-of-Suez sour crude pricing."]
+  - [murban, dubai_oman, 0.62, 1, "regional benchmark", "Murban strength feeds regional sour crude relative value."]
+  - [dubai_oman, basrah, 0.72, 1, "Middle East sour", "Dubai/Oman anchors Iraqi sour crude pricing."]
+  - [basrah, medium_sour_crude, 0.65, 1, "quality bucket", "Basrah is a Middle East medium sour crude stream."]
+  - [mars, medium_sour_crude, 0.62, 1, "quality bucket", "Mars is a US Gulf medium sour crude grade."]
+  - [medium_sour_crude, crude_quality_spread, 0.65, 1, "sour quality", "Medium sour availability influences sweet-sour spreads."]
+  - [maya, heavy_sour_crude, 0.68, 1, "quality bucket", "Maya is a heavy sour crude grade."]
+  - [venezuela, heavy_sour_crude, 0.55, 1, "heavy sour barrels", "Venezuelan availability affects heavy sour crude supply."]
+  - [refinery_complexity, heavy_sour_crude, 0.55, 1, "complex refinery demand", "Complex refineries can increase demand for heavy sour grades."]
+  - [heavy_sour_crude, crude_quality_spread, 0.65, 1, "heavy quality", "Heavy sour discounts shape crude quality spreads."]
+  - [light_sweet_crude, crude_quality_spread, 0.65, 1, "light quality", "Light sweet scarcity widens quality premia."]
+  - [crude_quality_spread, refining_margins, 0.55, 1, "feedstock quality", "Crude quality spreads affect refinery feedstock economics."]
+  - [russia_exports, espo, 0.65, 1, "Russian Far East flows", "Russian export flows affect ESPO availability."]
+  - [russia_sanctions, espo, 0.60, -1, "sanctioned flow", "Sanctions can disrupt or discount ESPO flows."]
+  - [china_crude_imports, espo, 0.58, 1, "Asia import pull", "Chinese crude import pull supports ESPO demand."]
+  - [espo, dubai_oman, 0.55, 1, "Asia crude signal", "ESPO strength can confirm East-of-Suez crude demand."]
+
+  - [brent, gasoil, 0.82, 1, "feedstock cost", "Crude price feeds distillate flat-price levels."]
+  - [gasoil, diesel_crack, 0.70, 1, "distillate margin", "Gasoil strength supports distillate crack margins."]
+  - [brent, vlsfo, 0.72, 1, "feedstock cost", "Crude cost feeds VLSFO flat prices."]
+  - [brent, hsfo, 0.70, 1, "feedstock cost", "Crude cost feeds HSFO flat prices."]
+  - [vlsfo, fuel_oil_crack, 0.75, 1, "low sulfur fuel", "VLSFO strength supports fuel oil crack economics."]
+  - [hsfo, fuel_oil_crack, 0.65, 1, "residual fuel", "HSFO strength supports fuel oil crack economics."]
+  - [marine_fuel_demand, vlsfo, 0.75, 1, "bunker demand", "Shipping demand supports VLSFO prices."]
+  - [marine_fuel_demand, hsfo, 0.65, 1, "bunker demand", "Scrubber-enabled bunker demand supports HSFO prices."]
+  - [desulfurization_capacity, vlsfo, 0.55, 1, "low sulfur supply", "Desulfurization capacity supports low-sulfur fuel supply."]
+  - [refinery_complexity, hsfo, 0.50, -1, "residue upgrading", "More complex refining can reduce surplus HSFO."]
+  - [lpg, propane, 0.80, 1, "LPG component", "Propane is a core LPG component."]
+  - [lpg, butane, 0.78, 1, "LPG component", "Butane is a core LPG component."]
+  - [petrochemical_demand, lpg, 0.70, 1, "petchem feedstock", "Petrochemical demand supports LPG feedstocks."]
+  - [petrochemical_demand, propane, 0.65, 1, "petchem feedstock", "Petrochemical demand supports propane."]
+  - [petrochemical_demand, butane, 0.60, 1, "petchem feedstock", "Petrochemical demand supports butane."]
+  - [brent, naphtha_flat, 0.78, 1, "feedstock cost", "Crude cost feeds naphtha flat-price levels."]
+  - [naphtha_flat, naphtha_crack, 0.70, 1, "flat price to crack", "Naphtha flat-price strength supports the naphtha crack if crude is stable."]
+  - [petrochemical_demand, naphtha_flat, 0.78, 1, "petchem demand", "Petrochemical feedstock demand supports naphtha prices."]
+  - [petrochemical_demand, naphtha_crack, 0.72, 1, "petchem crack", "Petrochemical demand supports naphtha margins."]
+  - [lpg, naphtha_crack, 0.42, -1, "feedstock substitution", "Abundant LPG can compete with naphtha as a petrochemical feedstock."]
+  - [road_fuel_demand, rbob, 0.82, 1, "driving demand", "Road fuel demand supports gasoline flat prices."]
+  - [road_fuel_demand, gasoline_crack, 0.80, 1, "driving demand", "Road fuel demand supports gasoline cracks."]
+  - [road_fuel_demand, ulsd, 0.60, 1, "road diesel", "Road fuel demand also supports diesel prices."]
+  - [road_fuel_demand, diesel_crack, 0.58, 1, "road diesel", "Road fuel demand supports diesel cracks."]
+  - [consumer_spending, road_fuel_demand, 0.62, 1, "consumer mobility", "Consumer spending supports discretionary driving demand."]
+  - [mobility_index, road_fuel_demand, 0.78, 1, "mobility nowcast", "Mobility data nowcasts road fuel demand."]
+  - [retail_fuel_demand, road_fuel_demand, 0.80, 1, "retail pull", "Retail pump demand is a direct road fuel demand input."]
+  - [ethanol, gasoline_crack, 0.45, -1, "gasoline substitution", "More ethanol blending can displace marginal gasoline demand."]
+  - [ethanol, rbob, 0.45, -1, "blendstock substitution", "Ethanol can offset some gasoline blendstock demand."]
+  - [biodiesel, diesel_crack, 0.45, -1, "diesel substitution", "Biodiesel can displace marginal fossil diesel demand."]
+  - [biodiesel, ulsd, 0.42, -1, "diesel substitution", "Biodiesel can reduce marginal ULSD demand."]
+  - [airline_capacity, jet_fuel, 0.82, 1, "scheduled capacity", "More airline capacity increases jet fuel burn."]
+  - [airline_capacity, jet_crack, 0.78, 1, "aviation demand", "Airline capacity supports jet cracks."]
+  - [airline_capacity, saf, 0.60, 1, "aviation transition", "Airline capacity also increases potential SAF demand."]
+  - [saf, jet_fuel, 0.40, -1, "fuel substitution", "SAF blending can displace a portion of conventional jet fuel demand."]
+  - [cold_winter, heating_oil_demand, 0.78, 1, "winter demand", "Cold weather lifts heating oil demand."]
+  - [heating_oil_demand, ulsd, 0.78, 1, "distillate demand", "Heating oil demand supports ULSD and heating oil prices."]
+  - [heating_oil_demand, diesel_crack, 0.74, 1, "distillate crack", "Heating oil demand supports distillate cracks."]
+
+  - [gasoline_crack, refining_margins, 0.72, 1, "margin input", "Gasoline cracks contribute to aggregate refining margins."]
+  - [diesel_crack, refining_margins, 0.80, 1, "margin input", "Diesel cracks are a major driver of aggregate refining margins."]
+  - [jet_crack, refining_margins, 0.65, 1, "margin input", "Jet cracks contribute to aggregate refining margins."]
+  - [naphtha_crack, refining_margins, 0.55, 1, "margin input", "Naphtha cracks affect light-product refining margins."]
+  - [fuel_oil_crack, refining_margins, 0.58, 1, "margin input", "Fuel oil cracks affect residue and upgrading economics."]
+  - [refining_margins, refinery_runs, 0.82, 1, "run incentive", "Higher margins encourage refiners to run more crude."]
+  - [refining_margins, crude_runs, 0.84, 1, "crude intake", "Higher margins encourage higher crude throughput."]
+  - [refinery_capacity, refinery_runs, 0.72, 1, "capacity ceiling", "Available capacity supports higher refinery runs."]
+  - [cdu_capacity, refinery_capacity, 0.75, 1, "primary capacity", "CDU capacity is the primary gate for refinery capacity."]
+  - [cdu_capacity, crude_runs, 0.78, 1, "throughput ceiling", "CDU capacity supports crude throughput."]
+  - [refinery_maintenance, refinery_outages, 0.80, 1, "turnaround", "Planned maintenance raises outage pressure."]
+  - [refinery_maintenance, refinery_runs, 0.76, -1, "turnaround runs", "Maintenance reduces refinery throughput."]
+  - [refinery_outages, refinery_capacity, 0.70, -1, "lost capacity", "Outages reduce effective refinery capacity."]
+  - [refinery_complexity, product_yields, 0.70, 1, "yield flexibility", "Complex refineries can shift and upgrade product yields."]
+  - [refinery_complexity, crude_quality_spread, 0.60, 1, "complexity premium", "Complexity affects the value of heavy and sour crude grades."]
+  - [fcc_margins, gasoline_crack, 0.72, 1, "gasoline conversion", "FCC economics support gasoline crack strength."]
+  - [fcc_margins, refining_margins, 0.62, 1, "conversion margin", "FCC margins contribute to aggregate refining margins."]
+  - [hydrocracker_margins, diesel_crack, 0.74, 1, "distillate conversion", "Hydrocracker economics support diesel cracks."]
+  - [hydrocracker_margins, jet_crack, 0.65, 1, "jet conversion", "Hydrocracker economics can support jet yield and cracks."]
+  - [hydrocracker_margins, refining_margins, 0.62, 1, "conversion margin", "Hydrocracker margins contribute to aggregate refining margins."]
+  - [desulfurization_capacity, ulsd, 0.55, 1, "low sulfur diesel", "Desulfurization capacity supports low-sulfur diesel supply."]
+  - [product_yields, us_product_stocks, 0.50, 1, "product supply", "Higher product yields can build product stocks if demand lags."]
+  - [refinery_runs, crude_runs, 0.90, 1, "runs to crude intake", "Refinery runs translate directly into crude throughput."]
+  - [crude_runs, global_demand, 0.72, 1, "crude demand", "Higher refinery crude intake increases crude demand."]
+  - [crude_runs, brent, 0.62, 1, "refinery pull", "Higher crude runs support crude flat price through demand."]
+
+  - [us_crude_stocks, oecd_inventories, 0.72, 1, "US stock contribution", "US crude inventories contribute to visible OECD stock pressure."]
+  - [us_crude_stocks, wti, 0.82, -1, "US stocks to WTI", "US crude stock builds usually pressure WTI."]
+  - [us_crude_stocks, cushing_inv, 0.60, 1, "US to Cushing", "Broad US crude builds often coincide with Cushing pressure."]
+  - [us_product_stocks, gasoline_inv, 0.70, 1, "product stocks", "US product stocks include gasoline inventories."]
+  - [us_product_stocks, distillate_inv, 0.70, 1, "product stocks", "US product stocks include distillate inventories."]
+  - [us_product_stocks, gasoline_crack, 0.72, -1, "stocks to crack", "High product stocks weaken gasoline cracks."]
+  - [us_product_stocks, diesel_crack, 0.74, -1, "stocks to crack", "High product stocks weaken diesel cracks."]
+  - [ara_stocks, gasoil, 0.65, -1, "Europe stocks", "ARA stock builds pressure European gasoil."]
+  - [ara_stocks, diesel_crack, 0.62, -1, "Europe stocks", "ARA distillate builds weaken diesel cracks."]
+  - [singapore_stocks, fuel_oil_crack, 0.62, -1, "Asia stocks", "Singapore stock builds pressure fuel oil cracks."]
+  - [singapore_stocks, naphtha_crack, 0.55, -1, "Asia stocks", "Singapore stock builds can pressure Asian naphtha margins."]
+  - [china_crude_imports, china_demand, 0.76, 1, "China import pull", "Crude imports confirm Chinese oil demand."]
+  - [china_crude_imports, dubai_oman, 0.72, 1, "Asia crude demand", "Chinese import demand supports Dubai/Oman."]
+  - [china_crude_imports, brent, 0.66, 1, "global demand", "Chinese import demand supports global crude prices."]
+  - [india_crude_imports, import_demand, 0.72, 1, "India import pull", "Indian crude imports add to seaborne import demand."]
+  - [india_crude_imports, dubai_oman, 0.66, 1, "Asia crude demand", "Indian import demand supports Middle East sour benchmarks."]
+  - [russia_exports, india_crude_imports, 0.45, 1, "discounted flows", "Russian exports can support Indian crude import volumes."]
+  - [strategic_petroleum_reserve, global_supply, 0.55, 1, "SPR release", "SPR releases add crude supply to the market."]
+  - [strategic_petroleum_reserve, wti, 0.55, -1, "SPR release", "SPR releases can pressure US crude prices."]
+  - [wti_houston, crude_exports, 0.72, 1, "export parity", "Gulf Coast crude strength is linked to export economics."]
+  - [crude_exports, global_supply, 0.68, 1, "export supply", "Crude exports add barrels to seaborne supply."]
+  - [product_exports, us_product_stocks, 0.68, -1, "export draw", "Product exports draw down domestic product stocks."]
+  - [product_exports, diesel_crack, 0.60, 1, "export pull", "Product exports can tighten diesel markets."]
+  - [product_exports, gasoline_crack, 0.55, 1, "export pull", "Product exports can tighten gasoline markets."]
+  - [import_demand, global_demand, 0.70, 1, "seaborne pull", "Import demand contributes to global oil demand."]
+  - [import_demand, brent, 0.64, 1, "seaborne demand", "Import pull supports seaborne crude benchmarks."]
+  - [import_demand, tanker_rates, 0.55, 1, "freight demand", "Seaborne import demand lifts tanker utilization and rates."]
+  - [storage_capacity, oecd_inventories, 0.50, 1, "storage buffer", "More available storage can absorb surplus inventories."]
+  - [storage_capacity, brent_spread, 0.52, -1, "storage economics", "More storage availability can soften prompt spread tightness."]
+  - [stock_draws, oecd_inventories, 0.82, -1, "drawdown", "Inventory draws reduce visible stock pressure."]
+  - [stock_draws, brent_spread, 0.75, 1, "tightness", "Stock draws strengthen prompt spreads."]
+  - [stock_draws, brent, 0.70, 1, "tight balance", "Stock draws support crude flat price."]
+
+  - [vlcc_rates, tanker_rates, 0.82, 1, "crude freight", "VLCC rates drive broad tanker rate pressure."]
+  - [suezmax_rates, tanker_rates, 0.72, 1, "crude freight", "Suezmax rates contribute to broad tanker rate pressure."]
+  - [aframax_rates, tanker_rates, 0.68, 1, "regional freight", "Aframax rates contribute to broad tanker rate pressure."]
+  - [clean_tanker_rates, tanker_rates, 0.72, 1, "product freight", "Clean tanker rates contribute to broad tanker pressure."]
+  - [dirty_tanker_rates, tanker_rates, 0.74, 1, "dirty freight", "Dirty tanker rates contribute to broad tanker pressure."]
+  - [tanker_rates, brent, 0.45, 1, "delivered cost", "Higher freight can support delivered crude prices and regional premia."]
+  - [tanker_rates, import_demand, 0.45, -1, "freight drag", "Higher freight costs can dampen marginal import demand."]
+  - [clean_tanker_rates, product_exports, 0.58, -1, "product freight drag", "Higher clean freight can reduce marginal product export economics."]
+  - [dirty_tanker_rates, crude_exports, 0.58, -1, "crude freight drag", "Higher dirty freight can reduce marginal crude export economics."]
+  - [port_congestion, freight_time, 0.78, 1, "port delays", "Congestion lengthens voyage and waiting time."]
+  - [port_congestion, tanker_rates, 0.70, 1, "delayed tonnage", "Congestion ties up vessels and raises freight rates."]
+  - [port_congestion, product_exports, 0.55, -1, "terminal delays", "Port delays can slow product exports."]
+  - [shipping_insurance, tanker_rates, 0.65, 1, "insurance cost", "Higher insurance costs lift delivered freight economics."]
+  - [shipping_insurance, crude_exports, 0.52, -1, "insured trade", "Higher insurance costs can constrain risky crude exports."]
+  - [shipping_insurance, urals, 0.50, -1, "sanctioned freight", "Higher insurance friction can widen Urals discounts."]
+  - [ais_flows, crude_exports, 0.62, 1, "observed crude flows", "AIS tracking confirms seaborne crude export activity."]
+  - [ais_flows, product_exports, 0.58, 1, "observed product flows", "AIS tracking confirms refined product export activity."]
+  - [ais_flows, russia_exports, 0.58, 1, "observed Russian flows", "AIS tracking helps infer Russian export volumes."]
+  - [canal_disruption, red_sea, 0.70, 1, "route disruption", "Canal disruptions often overlap with Red Sea and Suez routing risk."]
+  - [canal_disruption, freight_time, 0.78, 1, "rerouting", "Canal disruption lengthens voyage times."]
+  - [canal_disruption, tanker_rates, 0.72, 1, "rerouting freight", "Rerouting raises tanker demand and freight rates."]
+  - [freight_time, ulsd, 0.55, 1, "arrival delay", "Longer voyages can tighten prompt diesel availability."]
+  - [freight_time, vlsfo, 0.48, 1, "arrival delay", "Longer voyages can tighten prompt bunker fuel availability."]
+  - [freight_time, brent, 0.50, 1, "arrival delay", "Longer voyages can support prompt crude premia."]
+  - [vessel_availability, tanker_rates, 0.76, -1, "tonnage supply", "More available vessels usually lower tanker rates."]
+  - [vessel_availability, freight_time, 0.55, -1, "capacity relief", "More available vessels can reduce shipping delays."]
+  - [ballast_distance, tanker_rates, 0.66, 1, "ballast cost", "Longer ballast legs increase effective freight costs."]
+  - [ballast_distance, freight_time, 0.62, 1, "empty sailing", "Longer ballast legs increase effective voyage time."]
+
+  - [henry_hub, us_lng_feedgas, 0.55, -1, "feedgas cost", "Higher Henry Hub prices can reduce LNG feedgas margins."]
+  - [us_lng_feedgas, lng_exports, 0.82, 1, "feedgas to exports", "Feedgas demand is the physical input to LNG exports."]
+  - [lng_exports, henry_hub, 0.55, 1, "gas demand", "Higher LNG exports increase US gas demand."]
+  - [lng_exports, ttf_gas, 0.50, -1, "LNG supply", "More LNG export supply can ease European gas prices when cargoes land there."]
+  - [lng_exports, jkm_lng, 0.50, -1, "LNG supply", "More LNG export supply can ease Asian LNG prices when cargoes land there."]
+  - [ttf_gas, nbp_gas, 0.82, 1, "Europe gas link", "TTF and NBP tend to co-move through Northwest Europe gas balances."]
+  - [nbp_gas, ttf_gas, 0.72, 1, "Europe gas link", "NBP strength can feed back into TTF through regional arbitrage."]
+  - [jkm_lng, ttf_gas, 0.55, 1, "LNG competition", "Asian LNG strength can pull cargoes away from Europe and support TTF."]
+  - [asian_lng_demand, jkm_lng, 0.84, 1, "Asian demand", "Asian LNG demand supports JKM prices."]
+  - [china_activity, asian_lng_demand, 0.60, 1, "industrial gas demand", "Chinese activity supports Asian LNG demand."]
+  - [jkm_lng, lng_netback, 0.75, 1, "destination price", "Higher JKM improves export netbacks to Asia."]
+  - [ttf_gas, lng_netback, 0.70, 1, "destination price", "Higher TTF improves export netbacks to Europe."]
+  - [henry_hub, lng_netback, 0.70, -1, "source gas cost", "Higher Henry Hub lowers US LNG netbacks."]
+  - [lng_freight, lng_netback, 0.72, -1, "shipping cost", "Higher LNG freight reduces netbacks."]
+  - [lng_netback, us_lng_feedgas, 0.78, 1, "export incentive", "Higher LNG netbacks support feedgas demand."]
+  - [lng_freight, jkm_lng, 0.55, 1, "delivered LNG", "Higher LNG freight supports delivered Asian LNG prices."]
+  - [lng_freight, ttf_gas, 0.50, 1, "delivered LNG", "Higher LNG freight supports delivered European gas prices."]
+  - [europe_gas_storage, ttf_gas, 0.82, -1, "gas stocks", "High European gas storage pressures TTF."]
+  - [norway_gas_flows, ttf_gas, 0.70, -1, "pipeline supply", "Norwegian gas flows ease TTF tightness."]
+  - [norway_gas_flows, nbp_gas, 0.62, -1, "pipeline supply", "Norwegian gas flows ease UK and Northwest Europe gas tightness."]
+  - [russian_pipeline_gas, ttf_gas, 0.72, -1, "pipeline supply", "More Russian pipeline gas eases European gas prices."]
+  - [ukraine_war, russian_pipeline_gas, 0.70, -1, "war disruption", "The war can reduce Russian pipeline gas flows."]
+  - [russia_sanctions, russian_pipeline_gas, 0.60, -1, "sanctions disruption", "Sanctions pressure can reduce Russian pipeline gas flows."]
+  - [lng_regas_capacity, ttf_gas, 0.55, -1, "import flexibility", "More regas capacity helps Europe absorb LNG and ease TTF."]
+  - [lng_regas_capacity, europe_gas_storage, 0.50, 1, "storage refill", "Regas capacity can support European gas storage refill."]
+  - [lng_supply_disruption, jkm_lng, 0.82, 1, "LNG outage", "LNG supply disruptions support Asian LNG prices."]
+  - [lng_supply_disruption, ttf_gas, 0.76, 1, "LNG outage", "LNG supply disruptions support European gas prices."]
+  - [lng_supply_disruption, lng_freight, 0.55, 1, "cargo scarcity", "LNG disruptions can raise shipping premia and cargo competition."]
+  - [red_sea, lng_freight, 0.50, 1, "LNG route risk", "Red Sea disruption can lift LNG freight costs on affected routes."]
+  - [ttf_gas, gas_to_oil_switching, 0.72, 1, "gas-oil switching", "High European gas prices can encourage switching into oil products."]
+  - [jkm_lng, gas_to_oil_switching, 0.65, 1, "gas-oil switching", "High Asian LNG prices can encourage switching into oil products."]
+  - [gas_to_oil_switching, diesel_crack, 0.65, 1, "oil product demand", "Gas-to-oil switching supports distillate cracks."]
+  - [gas_to_oil_switching, fuel_oil_crack, 0.60, 1, "oil product demand", "Gas-to-oil switching can support fuel oil cracks."]
+  - [gas_to_oil_switching, global_demand, 0.55, 1, "incremental oil demand", "Fuel switching adds to oil demand pressure."]
+
+  - [global_gdp, industrial_production, 0.74, 1, "growth to industry", "Global growth supports industrial production."]
+  - [mfg_pmi, industrial_production, 0.76, 1, "PMI to output", "Manufacturing PMI leads industrial production."]
+  - [industrial_production, global_demand, 0.74, 1, "real economy demand", "Industrial production supports broad oil demand."]
+  - [industrial_production, diesel_crack, 0.70, 1, "industrial diesel", "Industrial activity supports diesel demand and cracks."]
+  - [industrial_production, petrochemical_demand, 0.62, 1, "chemical demand", "Industrial production supports petrochemical feedstock demand."]
+  - [china_credit_impulse, china_activity, 0.72, 1, "China credit", "Credit impulse can lead Chinese activity."]
+  - [china_credit_impulse, china_demand, 0.62, 1, "China demand lead", "Credit impulse can lead Chinese oil demand."]
+  - [china_credit_impulse, construction_activity, 0.65, 1, "construction lead", "Chinese credit impulse can support construction activity."]
+  - [construction_activity, diesel_crack, 0.58, 1, "construction diesel", "Construction activity supports diesel demand."]
+  - [construction_activity, global_demand, 0.55, 1, "real economy demand", "Construction activity contributes to oil demand."]
+  - [petrochemical_margins, petrochemical_demand, 0.78, 1, "petchem incentive", "Better petrochemical margins support feedstock demand."]
+  - [petrochemical_margins, naphtha_crack, 0.70, 1, "naphtha demand", "Petrochemical margins support naphtha cracks."]
+  - [petrochemical_margins, lpg, 0.55, 1, "LPG feedstock", "Petrochemical margins support LPG feedstock demand."]
+  - [trucking_miles, trucking, 0.82, 1, "freight activity", "Trucking miles directly measure freight activity."]
+  - [trucking_miles, ulsd, 0.70, 1, "diesel demand", "Trucking miles support ULSD demand."]
+  - [trucking_miles, diesel_crack, 0.70, 1, "diesel demand", "Trucking miles support diesel cracks."]
+  - [airline_capacity, airline_traffic, 0.78, 1, "scheduled seats", "Airline capacity leads realized air traffic."]
+  - [mobility_index, consumer_spending, 0.45, 1, "activity proxy", "Mobility can proxy consumer activity."]
+  - [mobility_index, gasoline_crack, 0.70, 1, "driving nowcast", "Mobility supports gasoline crack demand signals."]
+  - [retail_fuel_demand, rbob, 0.78, 1, "pump demand", "Retail fuel demand supports RBOB."]
+  - [retail_fuel_demand, gasoline_crack, 0.78, 1, "pump demand", "Retail fuel demand supports gasoline cracks."]
+  - [agricultural_diesel_demand, diesel_crack, 0.58, 1, "seasonal diesel", "Agricultural activity supports diesel cracks."]
+  - [agricultural_diesel_demand, ulsd, 0.55, 1, "seasonal diesel", "Agricultural activity supports ULSD demand."]
+  - [mining_activity, diesel_crack, 0.58, 1, "mining diesel", "Mining activity supports diesel cracks."]
+  - [mining_activity, global_demand, 0.50, 1, "industrial demand", "Mining activity contributes to broad oil demand."]
+
+  - [hurricane_risk, refinery_outages, 0.82, 1, "storm outage", "Hurricanes can disrupt Gulf Coast refining."]
+  - [hurricane_risk, crude_exports, 0.62, -1, "terminal disruption", "Hurricanes can disrupt Gulf Coast crude exports."]
+  - [hurricane_risk, gasoline_crack, 0.70, 1, "product outage", "Storm-related refinery outages can support gasoline cracks."]
+  - [hurricane_risk, diesel_crack, 0.64, 1, "product outage", "Storm-related refinery outages can support diesel cracks."]
+  - [freeze_off_risk, us_shale, 0.70, -1, "well freeze", "Freeze-offs can reduce US shale output."]
+  - [freeze_off_risk, global_supply, 0.55, -1, "supply loss", "Freeze-offs can reduce oil and gas supply."]
+  - [freeze_off_risk, henry_hub, 0.68, 1, "gas supply risk", "Gas production freeze-offs can support Henry Hub."]
+  - [heatwave_risk, road_fuel_demand, 0.50, 1, "summer mobility", "Heatwaves can alter summer driving and cooling-related fuel demand."]
+  - [heatwave_risk, refinery_outages, 0.55, 1, "operational stress", "Extreme heat can stress refinery operations."]
+  - [heatwave_risk, gas_to_oil_switching, 0.45, 1, "cooling stress", "Extreme heat can raise fuel switching risk where gas and power systems tighten."]
+  - [middle_east_tension, hormuz_risk, 0.82, 1, "Gulf escalation", "Middle East tension raises Hormuz risk."]
+  - [middle_east_tension, brent, 0.70, 1, "risk premium", "Middle East tension adds crude risk premium."]
+  - [middle_east_tension, basrah, 0.52, -1, "Iraq risk", "Regional tension can threaten Iraqi crude availability."]
+  - [middle_east_tension, vlcc_rates, 0.55, 1, "route risk", "Middle East tension can lift long-haul crude freight rates."]
+  - [hormuz_risk, vlcc_rates, 0.58, 1, "Gulf freight risk", "Hormuz risk raises freight and insurance costs for Gulf-loading VLCCs."]
+  - [black_sea_risk, russia_exports, 0.70, -1, "Black Sea flows", "Black Sea risk can disrupt Russian export flows."]
+  - [black_sea_risk, urals, 0.62, -1, "regional discount", "Black Sea risk can widen discounts on regional Russian barrels."]
+  - [black_sea_risk, suezmax_rates, 0.55, 1, "regional freight", "Black Sea risk can lift regional crude tanker rates."]
+  - [ukraine_war, russia_sanctions, 0.78, 1, "sanctions pressure", "The war increases Russian sanctions pressure."]
+  - [ukraine_war, black_sea_risk, 0.74, 1, "conflict route risk", "The war raises Black Sea disruption risk."]
+  - [ukraine_war, ttf_gas, 0.65, 1, "Europe gas risk", "The war can increase European gas risk premium."]
+  - [sanctions_enforcement, russia_exports, 0.76, -1, "enforced sanctions", "Stronger enforcement can reduce Russian export volumes."]
+  - [sanctions_enforcement, iran_exports, 0.70, -1, "enforced sanctions", "Stronger enforcement can reduce Iranian export volumes."]
+  - [sanctions_enforcement, shipping_insurance, 0.62, 1, "compliance cost", "Sanctions enforcement increases shipping insurance and compliance friction."]
+  - [price_cap_policy, urals, 0.70, -1, "price cap discount", "Price-cap policy can widen Urals discounts."]
+  - [price_cap_policy, russia_exports, 0.58, -1, "policy friction", "Price-cap policy can constrain Russian export logistics."]
+  - [price_cap_policy, shipping_insurance, 0.55, 1, "compliance friction", "Price-cap rules raise shipping insurance and compliance costs."]
+  - [export_bans, product_exports, 0.76, -1, "export restriction", "Export bans directly reduce product export availability."]
+  - [export_bans, diesel_crack, 0.64, 1, "global product tightness", "Export bans can tighten global diesel markets."]
+  - [export_bans, gasoline_crack, 0.58, 1, "global product tightness", "Export bans can tighten global gasoline markets."]
+  - [labor_strikes, refinery_outages, 0.68, 1, "labor outage", "Strikes can shut or slow refinery operations."]
+  - [labor_strikes, port_congestion, 0.62, 1, "port labor", "Port strikes can create terminal congestion."]
+  - [labor_strikes, product_exports, 0.55, -1, "export disruption", "Labor disruption can slow refined product exports."]
+  - [pipeline_disruption, global_supply, 0.62, -1, "flow constraint", "Pipeline disruptions can reduce available oil supply."]
+  - [pipeline_disruption, wti_houston, 0.55, -1, "basis disruption", "Pipeline disruptions can pressure Gulf Coast crude basis."]
+  - [pipeline_disruption, brent, 0.55, 1, "supply risk", "Pipeline disruptions can add crude supply risk premium."]
+  - [cyber_risk, pipeline_disruption, 0.62, 1, "infrastructure cyber", "Cyber incidents can disrupt pipeline operations."]
+  - [cyber_risk, refinery_outages, 0.55, 1, "refinery cyber", "Cyber incidents can disrupt refinery operations."]
+  - [cyber_risk, port_congestion, 0.48, 1, "terminal cyber", "Cyber incidents can slow terminal and port operations."]
+
   - [global_demand, brent, 0.90, 1, "demand to crude", "Stronger demand tightens crude balances."]
   - [global_supply, brent, 0.90, -1, "supply to crude", "More supply loosens crude balances."]
   - [global_demand, wti, 0.75, 1, "demand to WTI", "Global demand also supports US crude."]
