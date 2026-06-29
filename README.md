@@ -1,6 +1,6 @@
 # Kolmo
 
-kolmo_stats is the ultimate intelligence and analysis toolkit for Oil & Gas trading. 
+kolmo_stats is the ultimate intelligence and analysis toolkit for energy trading. 
 
 Building the world's largest open-source intelligence graph for energy markets.
 
