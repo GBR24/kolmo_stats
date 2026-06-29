@@ -1,7 +1,7 @@
 """
 Common energy unit conversions.
 
-These are utility functions used internally and available for users who need
+These are utility functions available for users who need
 to convert between energy measurement systems before passing data to the
 public API functions.
 """
